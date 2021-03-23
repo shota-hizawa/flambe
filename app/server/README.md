@@ -11,12 +11,9 @@ poetryを使用。
 https://qiita.com/navitime_tech/items/0a431a2d74c156d0bda2
 
 ### migrations
-手動でマイグレーションを実行する場合は下記の通り。
-## migrations
-```sh
-## generate migration files in ./migrations/versions
-alembic revision --autogenerate
+マイグレーションを実行する場合は下記の通り。  
+serverのコンテナ内でalembicによってマイグレーションファイルを生成し、適用している。
 
-## apply migrations to database
-alembic upgrade head
+```sh
+docker-compose exec erver bash -c "alembic revision --autogenerate && alembic upgrade head"
 ```
