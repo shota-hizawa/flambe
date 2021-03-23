@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "flambe_server"
+version = "0.1.0"
+description = "API Server of this todo application developed with Fast API"
+authors = ["日沢翔太 <hshota28@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.63.0"
+uvicorn = "^0.13.4"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
