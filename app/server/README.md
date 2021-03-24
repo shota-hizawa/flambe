@@ -15,5 +15,5 @@ https://qiita.com/navitime_tech/items/0a431a2d74c156d0bda2
 serverのコンテナ内でalembicによってマイグレーションファイルを生成し、適用している。
 
 ```sh
-docker-compose exec erver bash -c "alembic revision --autogenerate && alembic upgrade head"
+docker-compose exec server bash -c "alembic revision --autogenerate && alembic upgrade head"
 ```
