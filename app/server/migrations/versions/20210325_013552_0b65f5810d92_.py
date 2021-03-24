@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: deeb16a1fce1
+Revision ID: 0b65f5810d92
 Revises: 
-Create Date: 2021-03-24 21:15:27.041899+09:00
+Create Date: 2021-03-25 01:35:52.157058+09:00
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'deeb16a1fce1'
+revision = '0b65f5810d92'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,8 +22,9 @@ def upgrade():
     sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
     sa.Column('deleted', sa.BOOLEAN(), nullable=False, comment='論理削除フラグ'),
     sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False, comment='登録日時'),
-    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), nullable=True, comment='最終更新日時'),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False, comment='最終更新日時'),
     sa.Column('username', sa.String(length=255), nullable=False, comment='ユーザ名'),
+    sa.Column('password_hash', sa.String(length=128), nullable=False, comment='パスワードのハッシュ値'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
     )
