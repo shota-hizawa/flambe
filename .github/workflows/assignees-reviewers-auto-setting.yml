@@ -1,0 +1,17 @@
+# assignees/reviewersを自動設定するアクション
+# PR作成者はreviewersから除外される
+# @see: https://github.com/marketplace/actions/review-assign-action
+name: Review Assign
+
+on:
+  pull_request:
+    types: [ opened, ready_for_review ]
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hkusu/review-assign-action@v1.0.0
+        with:
+          assignees: ${{ github.actor }} # assign pull request author
+          reviewers: shota-hizawa # if draft, assigned when draft is released
