@@ -4,16 +4,16 @@ from sqlalchemy.types import Enum as DbEnum
 from enum import Enum, auto
 
 
-class Status(Enum):
-    TODO = auto()
-    DOING = auto()
-    DONE = auto()
+class Status(str, Enum):
+    TODO = "TODO"
+    DOING = "DOING"
+    DONE = "DONE"
 
 
-class Priority(Enum):
-    HIGH = auto()
-    MEDIUM = auto()
-    LOW = auto()
+class Priority(str, Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
 
 
 class Task(BaseModel):
