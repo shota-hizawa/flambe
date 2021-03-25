@@ -11,9 +11,13 @@ poetryを使用。
 https://qiita.com/navitime_tech/items/0a431a2d74c156d0bda2
 
 ### migrations
-マイグレーションを実行する場合は下記の通り。  
-serverのコンテナ内でalembicによってマイグレーションファイルを生成し、適用している。
 
-```sh
-docker-compose exec erver bash -c "alembic revision --autogenerate && alembic upgrade head"
+マイグレーションファイル生成
+```shell
+docker-compose exec server bash -c "alembic revision --autogenerate"
+```
+
+マイグレーション実行
+```shell
+docker-compose exec server bash -c "alembic upgrade head"
 ```
