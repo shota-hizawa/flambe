@@ -7,13 +7,15 @@ def find_all(db: Session) -> List[User]:
     return db.query(User).filter(User.deleted == False).all()  # noqa
 
 
+def find_by_id(db: Session, user_id: int) -> User:
+    return db.query(User).get(user_id)
+
+
 def create(db: Session, username: str, password_hash: str) -> User:
     created_user = User(username=username, password_hash=password_hash)
     db.add(created_user)
     return created_user
 
 
-def soft_delete(db: Session, id: int):
-    deleted_user = db.query(User).get(id)
-    if deleted_user is not None:
-        deleted_user.deleted = True
+def soft_delete(deleted_user: User):
+    deleted_user.deleted = True
