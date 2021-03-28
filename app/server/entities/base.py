@@ -1,5 +1,5 @@
 from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import INTEGER, TIMESTAMP, BOOLEAN
+from sqlalchemy.dialects.mysql import INTEGER, BOOLEAN, DATETIME
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.sql.functions import current_timestamp
 from database import Base
@@ -14,21 +14,17 @@ class BaseModel(Base):
         autoincrement=True,
     )
 
-    deleted = Column(
-        "deleted", BOOLEAN, nullable=False, comment="論理削除フラグ", default=False
-    )
+    deleted = Column(BOOLEAN, nullable=False, comment="論理削除フラグ", default=False)
 
     created_at = Column(
-        "created_at",
-        TIMESTAMP(timezone=True),
+        DATETIME(timezone=True),
         server_default=current_timestamp(),
         nullable=False,
         comment="登録日時",
     )
 
     updated_at = Column(
-        "updated_at",
-        TIMESTAMP(timezone=True),
+        DATETIME(timezone=True),
         server_default=current_timestamp(),
         nullable=False,
         onupdate=current_timestamp(),

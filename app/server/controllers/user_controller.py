@@ -20,6 +20,6 @@ async def create(create_user_schema: CreateUserSchema, db: Session = Depends(get
     )
 
 
-@router.delete("/{user_id}", response_model=int)
+@router.delete("/{user_id}", response_model=None)
 async def delete(user_id: int, db: Session = Depends(get_db)):
     user_service.delete(db, user_id)
