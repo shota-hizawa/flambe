@@ -22,5 +22,9 @@ class CreateTaskSchema(BaseModel):
     description: Optional[constr(min_length=0, max_length=255)]
 
 
-class DeleteTaskSchema(BaseModel):
-    id: int
+class UpdateTaskStatusSchema(BaseModel):
+    new_status: Status
+
+
+class UpdateTaskPrioritySchema(BaseModel):
+    new_priority: Priority
