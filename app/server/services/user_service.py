@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from utils.crypt import encrypt
 from typing import List, cast
 from entities import User
+from exceptions import *
 
 
 def get_all(db: Session) -> List[User]:
@@ -24,5 +25,5 @@ def delete(db, user_id: int):
         user = cast(User, user)
         user_repository.soft_delete(user)
     else:
-        raise Exception("user not found.")
+        raise ApplicationException(ErrorMessages.UserIsNotFound)
     db.commit()
