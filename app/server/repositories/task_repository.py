@@ -1,6 +1,6 @@
 from entities.task import Task, Status, Priority
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, cast
 from exceptions import *
 
 
@@ -8,10 +8,15 @@ def find_all(db: Session) -> List[Task]:
     return db.query(Task).filter(Task.deleted == False).all()  # noqa
 
 
+# TODO: [FLAMBE-4]論理削除は要検討
 def find_by_id(db: Session, task_id: int) -> Task:
     task = db.query(Task).get(task_id)
     if task is None:
         raise ApplicationException(ErrorMessages.TaskIsNotFound)
+    task = cast(Task, task)
+    if task.deleted:
+        raise ApplicationException(ErrorMessages.TaskIsNotFound)
+
     return task
 
 
