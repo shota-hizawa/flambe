@@ -14,8 +14,6 @@ class BaseModel(Base):
         autoincrement=True,
     )
 
-    deleted = Column(BOOLEAN, nullable=False, comment="論理削除フラグ", default=False)
-
     created_at = Column(
         DATETIME(timezone=True),
         server_default=current_timestamp(),
