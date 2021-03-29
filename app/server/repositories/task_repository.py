@@ -1,4 +1,5 @@
 from entities.task import Task, Status, Priority
+from entities.user import User
 from sqlalchemy.orm import Session
 from typing import List, Optional, cast
 from exceptions import *
@@ -29,6 +30,11 @@ def update_status(updated_task: Task, new_status: Status) -> Task:
 
 def update_priority(updated_task: Task, new_priority: Priority) -> Task:
     updated_task.priority = new_priority
+    return updated_task
+
+
+def assign_user(updated_task: Task, new_assignee: User) -> Task:
+    updated_task.assignees.append(new_assignee)
     return updated_task
 
 

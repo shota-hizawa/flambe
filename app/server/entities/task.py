@@ -1,7 +1,9 @@
 from entities.base import BaseModel
 from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum as DbEnum
-from enum import Enum, auto
+from enum import Enum
+from entities.task_assignment import TaskAssignment
 
 
 class Status(str, Enum):
@@ -27,4 +29,9 @@ class Task(BaseModel):
     )
     priority = Column(
         DbEnum(Priority), nullable=False, default=Priority.MEDIUM, comment="優先度"
+    )
+    assignees = relationship(
+        "User",
+        secondary=TaskAssignment.__tablename__,
+        back_populates="tasks",
     )

@@ -1,4 +1,5 @@
 from repositories import task_repository
+from services import user_service
 from sqlalchemy.orm import Session
 from typing import List, Optional, cast
 from entities.task import Task, Status, Priority
@@ -16,14 +17,14 @@ def create(db: Session, title: str, description: Optional[str]) -> Task:
 
 
 def update_status(db: Session, task_id: int, new_status: Status) -> Task:
-    updated_task = __get_task_by_id(db=db, task_id=task_id)
+    updated_task = get_task_by_id(db=db, task_id=task_id)
     task_repository.update_status(updated_task=updated_task, new_status=new_status)
     db.commit()
     return updated_task
 
 
 def update_priority(db: Session, task_id: int, new_priority: Priority) -> Task:
-    updated_task = __get_task_by_id(db=db, task_id=task_id)
+    updated_task = get_task_by_id(db=db, task_id=task_id)
     task_repository.update_priority(
         updated_task=updated_task, new_priority=new_priority
     )
@@ -31,13 +32,21 @@ def update_priority(db: Session, task_id: int, new_priority: Priority) -> Task:
     return updated_task
 
 
+def assign(db: Session, task_id: int, user_id: int) -> Task:
+    task = get_task_by_id(db=db, task_id=task_id)
+    user = user_service.get_user_by_id(db=db, user_id=user_id)
+    task_repository.assign_user(updated_task=task, new_assignee=user)
+    db.commit()
+    return task
+
+
 def delete(db, task_id: int) -> None:
-    deleted_task = __get_task_by_id(db=db, task_id=task_id)
+    deleted_task = get_task_by_id(db=db, task_id=task_id)
     task_repository.delete(db, deleted_task)
     db.commit()
 
 
-def __get_task_by_id(db, task_id: int) -> Task:
+def get_task_by_id(db, task_id: int) -> Task:
     task = task_repository.find_by_id(db=db, task_id=task_id)
     if task is not None:
         return cast(Task, task)

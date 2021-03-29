@@ -2,11 +2,9 @@ from pydantic import BaseModel, constr
 from datetime import datetime
 
 
-class UserSchema(BaseModel):
+class UserSchemaInDB(BaseModel):
     id: int
     username: str
-    created_at: datetime
-    updated_at: datetime
 
     class Config:
         orm_mode = True
