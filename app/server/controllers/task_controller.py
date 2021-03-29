@@ -6,6 +6,7 @@ from schemas.task_schema import (
     CreateTaskSchema,
     UpdateTaskStatusSchema,
     UpdateTaskPrioritySchema,
+    AssignTaskSchema,
 )
 from sqlalchemy.orm import Session
 from typing import List
@@ -46,6 +47,16 @@ async def update_priority(
 ):
     return task_service.update_priority(
         db=db, task_id=task_id, new_priority=update_task_priority_schema.new_priority
+    )
+
+
+@router.post("/assign", response_model=TaskSchema)
+async def assign_task(
+    assign_task_schema: AssignTaskSchema,
+    db: Session = Depends(get_db),
+):
+    return task_service.assign(
+        db, assign_task_schema.task_id, assign_task_schema.user_id
     )
 
 

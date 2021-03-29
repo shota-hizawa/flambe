@@ -1,10 +1,11 @@
 from pydantic import BaseModel, constr
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from entities.task import Status, Priority
+from schemas.user_schema import UserSchemaInDB
 
 
-class TaskSchema(BaseModel):
+class TaskSchemaInDB(BaseModel):
     id: int
     title: str
     description: Optional[str]
@@ -15,6 +16,10 @@ class TaskSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TaskSchema(TaskSchemaInDB):
+    assignees: List[UserSchemaInDB]
 
 
 class CreateTaskSchema(BaseModel):
@@ -28,3 +33,8 @@ class UpdateTaskStatusSchema(BaseModel):
 
 class UpdateTaskPrioritySchema(BaseModel):
     new_priority: Priority
+
+
+class AssignTaskSchema(BaseModel):
+    task_id: int
+    user_id: int
