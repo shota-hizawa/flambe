@@ -27,7 +27,7 @@ async def create(create_task_schema: CreateTaskSchema, db: Session = Depends(get
     )
 
 
-@router.put("/{task_id}/status")
+@router.put("/{task_id}/status", response_model=TaskSchema)
 async def update_status(
     task_id: int,
     update_task_status_schema: UpdateTaskStatusSchema,
@@ -38,8 +38,8 @@ async def update_status(
     )
 
 
-@router.put("/{task_id}/priority")
-async def update_status(
+@router.put("/{task_id}/priority", response_model=TaskSchema)
+async def update_priority(
     task_id: int,
     update_task_priority_schema: UpdateTaskPrioritySchema,
     db: Session = Depends(get_db),

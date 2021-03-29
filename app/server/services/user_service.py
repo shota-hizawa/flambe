@@ -20,10 +20,15 @@ def create(db: Session, username: str, password: str) -> User:
 
 
 def delete(db, user_id: int):
+    user = __get_user_by_id(db=db, user_id=user_id)
+    user = cast(User, user)
+    user_repository.delete(db, user)
+    db.commit()
+
+
+def __get_user_by_id(db, user_id: int) -> User:
     user = user_repository.find_by_id(db=db, user_id=user_id)
     if user is not None:
-        user = cast(User, user)
-        user_repository.soft_delete(user)
+        return cast(User, user)
     else:
         raise ApplicationException(ErrorMessages.UserIsNotFound)
-    db.commit()

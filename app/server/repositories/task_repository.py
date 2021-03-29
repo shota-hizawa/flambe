@@ -5,18 +5,14 @@ from exceptions import *
 
 
 def find_all(db: Session) -> List[Task]:
-    return db.query(Task).filter(Task.deleted == False).all()  # noqa
+    return db.query(Task).all()  # noqa
 
 
-# TODO: [FLAMBE-4]論理削除は要検討
 def find_by_id(db: Session, task_id: int) -> Task:
     task = db.query(Task).get(task_id)
     if task is None:
         raise ApplicationException(ErrorMessages.TaskIsNotFound)
     task = cast(Task, task)
-    if task.deleted:
-        raise ApplicationException(ErrorMessages.TaskIsNotFound)
-
     return task
 
 
@@ -36,5 +32,5 @@ def update_priority(updated_task: Task, new_priority: Priority) -> Task:
     return updated_task
 
 
-def soft_delete(deleted_task: Task):
-    deleted_task.deleted = True
+def delete(db: Session, deleted_task: Task) -> None:
+    db.delete(deleted_task)
