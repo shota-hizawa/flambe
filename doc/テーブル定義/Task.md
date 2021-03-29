@@ -3,7 +3,7 @@
 ## task
 |カラム名|型|制約|コメント|
 |---|---|---|---|
-|id|BIGINT UNSIGNED (20)|PK|ID|
+|id|INT (11)|PK|ID|
 |title|VARCHAR (255)|NOT NULL|タイトル|
 |description|VARCHAR (255)||説明本文|
 |status|ENUM ('TODO','DOING','DONE')|NOT NULL|ステータス|
