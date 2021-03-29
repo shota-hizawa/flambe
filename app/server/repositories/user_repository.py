@@ -1,6 +1,6 @@
 from entities import User
 from sqlalchemy.orm import Session
-from typing import List, cast
+from typing import List, cast, Optional
 from exceptions import *
 
 
@@ -13,6 +13,11 @@ def find_by_id(db: Session, user_id: int) -> User:
     if user is None:
         raise ApplicationException(ErrorMessages.UserIsNotFound)
     user = cast(User, user)
+    return user
+
+
+def find_by_username(db: Session, username: str) -> Optional[User]:
+    user = db.query(User).filter(User.username == username).first()
     return user
 
 
