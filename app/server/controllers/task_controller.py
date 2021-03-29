@@ -7,6 +7,7 @@ from schemas.task_schema import (
     UpdateTaskStatusSchema,
     UpdateTaskPrioritySchema,
     AssignTaskSchema,
+    RemoveAssignmentTaskSchema,
 )
 from sqlalchemy.orm import Session
 from typing import List
@@ -17,6 +18,16 @@ router = APIRouter()
 @router.get("/", response_model=List[TaskSchema])
 async def get_all_tasks(db: Session = Depends(get_db)):
     return task_service.get_all(db=db)
+
+
+@router.get("/incomplete", response_model=List[TaskSchema])
+async def get_incomplete_tasks(db: Session = Depends(get_db)):
+    return task_service.get_incomplete_tasks(db=db)
+
+
+@router.get("/incomplete/not-assigned", response_model=List[TaskSchema])
+async def get_incomplete_and_not_assigned_tasks(db: Session = Depends(get_db)):
+    return task_service.get_incomplete_and_not_assigned_tasks(db=db)
 
 
 @router.post("/", response_model=TaskSchema)
@@ -59,6 +70,16 @@ async def assign_task_to_user(
 ):
     return task_service.assign(
         db, assign_task_schema.task_id, assign_task_schema.user_id
+    )
+
+
+@router.post("/remove-assign", response_model=TaskSchema)
+async def remove_assignment_from_user(
+    remove_assignment_task_schema: RemoveAssignmentTaskSchema,
+    db: Session = Depends(get_db),
+):
+    return task_service.remove_assignment(
+        db, remove_assignment_task_schema.task_id, remove_assignment_task_schema.user_id
     )
 
 

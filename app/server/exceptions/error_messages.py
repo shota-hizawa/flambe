@@ -24,3 +24,6 @@ class ErrorMessages:
     ############################################################
     class TaskIsNotFound(BaseMessage):
         text = "指定されたタスクは存在しないか、すでに削除されています"
+
+    class UserIsNotAssignedToTheTask(BaseMessage):
+        text = "指定されたユーザは、そのタスクに割り当てられていません"

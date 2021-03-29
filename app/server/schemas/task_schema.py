@@ -38,3 +38,8 @@ class UpdateTaskPrioritySchema(BaseModel):
 class AssignTaskSchema(BaseModel):
     task_id: int
     user_id: int
+
+
+class RemoveAssignmentTaskSchema(BaseModel):
+    task_id: int
+    user_id: int
