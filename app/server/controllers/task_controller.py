@@ -15,12 +15,14 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[TaskSchema])
-async def get_all(db: Session = Depends(get_db)):
+async def get_all_tasks(db: Session = Depends(get_db)):
     return task_service.get_all(db=db)
 
 
 @router.post("/", response_model=TaskSchema)
-async def create(create_task_schema: CreateTaskSchema, db: Session = Depends(get_db)):
+async def create_task(
+    create_task_schema: CreateTaskSchema, db: Session = Depends(get_db)
+):
     return task_service.create(
         db=db,
         title=create_task_schema.title,
@@ -29,7 +31,7 @@ async def create(create_task_schema: CreateTaskSchema, db: Session = Depends(get
 
 
 @router.put("/{task_id}/status", response_model=TaskSchema)
-async def update_status(
+async def update_task_status(
     task_id: int,
     update_task_status_schema: UpdateTaskStatusSchema,
     db: Session = Depends(get_db),
@@ -40,7 +42,7 @@ async def update_status(
 
 
 @router.put("/{task_id}/priority", response_model=TaskSchema)
-async def update_priority(
+async def update_task_priority(
     task_id: int,
     update_task_priority_schema: UpdateTaskPrioritySchema,
     db: Session = Depends(get_db),
@@ -51,7 +53,7 @@ async def update_priority(
 
 
 @router.post("/assign", response_model=TaskSchema)
-async def assign_task(
+async def assign_task_to_user(
     assign_task_schema: AssignTaskSchema,
     db: Session = Depends(get_db),
 ):
@@ -61,5 +63,5 @@ async def assign_task(
 
 
 @router.delete("/{task_id}", response_model=None)
-async def delete(task_id: int, db: Session = Depends(get_db)):
+async def delete_task(task_id: int, db: Session = Depends(get_db)):
     task_service.delete(db, task_id)

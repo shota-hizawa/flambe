@@ -2,6 +2,7 @@ from entities.base import BaseModel
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from entities.task_assignment import TaskAssignment
+from typing import List
 
 
 class User(BaseModel):
