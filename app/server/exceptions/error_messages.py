@@ -10,8 +10,17 @@ class BaseMessage(metaclass=ABCMeta):
 
 
 class ErrorMessages:
+    ############################################################
+    # User系
+    ############################################################
     class UserIsNotFound(BaseMessage):
         text = "指定されたユーザは存在しないか、すでに削除されています"
 
+    class DuplicateUserName(BaseMessage):
+        text = "同じ名前のユーザがすでに存在しています"
+
+    ############################################################
+    # Task系
+    ############################################################
     class TaskIsNotFound(BaseMessage):
         text = "指定されたタスクは存在しないか、すでに削除されています"

@@ -11,6 +11,9 @@ def get_all(db: Session) -> List[User]:
 
 
 def create(db: Session, username: str, password: str) -> User:
+    if user_repository.find_by_username(db=db, username=username) is not None:
+        raise ApplicationException(ErrorMessages.DuplicateUserName)
+
     password_hash = encrypt(password)
     created_user = user_repository.create(
         db=db, username=username, password_hash=password_hash
