@@ -17,6 +17,10 @@ def find_by_id(db: Session, task_id: int) -> Task:
     return task
 
 
+def find_by_status_not_done(db: Session) -> List[Task]:
+    return db.query(Task).filter(Task.status is not Status.DONE).all()
+
+
 def create(db: Session, title: str, description: Optional[str]) -> Task:
     created_task = Task(title=title, description=description)
     db.add(created_task)
@@ -35,6 +39,11 @@ def update_priority(updated_task: Task, new_priority: Priority) -> Task:
 
 def assign_user(updated_task: Task, new_assignee: User) -> Task:
     updated_task.assignees.append(new_assignee)
+    return updated_task
+
+
+def remove_assignment_from_user(updated_task: Task, assignee: User) -> Task:
+    updated_task.assignees.remove(assignee)
     return updated_task
 
 
