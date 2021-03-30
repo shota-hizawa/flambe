@@ -6,7 +6,6 @@ from entities import User, Task
 from entities.task import Status, Priority
 from exceptions import *
 from utils.sort import sort_tasks_by_priority
-from .user_with_dogin_task_data import UserWithDoingTaskData, DoingTaskData
 
 
 def get_all(db: Session) -> List[User]:
@@ -25,7 +24,7 @@ def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
     return [*doing_tasks, *todo_tasks]
 
 
-def get_doing_task_data_of_all_users(db: Session) -> List[UserWithDoingTaskData]:
+def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
     users = user_repository.find_all(db=db)
     user_with_doing_task_data_list = []
 
@@ -56,14 +55,14 @@ def get_doing_task_data_of_all_users(db: Session) -> List[UserWithDoingTaskData]
             )
         )
         user_with_doing_task_data_list.append(
-            UserWithDoingTaskData(
-                user,
-                DoingTaskData(
-                    high_task_count=high_task_count,
-                    medium_task_count=medium_task_count,
-                    low_task_count=low_task_count,
-                ),
-            )
+            {
+                "user": user,
+                "doing_task_data": {
+                    "high_task_count": high_task_count,
+                    "medium_task_count": medium_task_count,
+                    "low_task_count": low_task_count,
+                },
+            }
         )
     return user_with_doing_task_data_list
 
