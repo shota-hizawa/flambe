@@ -9,11 +9,9 @@ class DoingTaskData(BaseModel):
 
 
 class UserWithDoingTaskData:
-    id: int
-    username: str
+    user: User
     doing_task_data: DoingTaskData
 
     def __init__(self, user: User, doing_task_data: DoingTaskData):
-        self.id = user.id
-        self.username = user.username
+        self.user = user
         self.doing_task_data = doing_task_data

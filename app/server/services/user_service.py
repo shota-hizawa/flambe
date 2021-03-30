@@ -25,7 +25,7 @@ def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
     return [*doing_tasks, *todo_tasks]
 
 
-def get_doing_task_numbers_of_all_users(db: Session) -> List[UserWithDoingTaskData]:
+def get_doing_task_data_of_all_users(db: Session) -> List[UserWithDoingTaskData]:
     users = user_repository.find_all(db=db)
     user_with_doing_task_data_list = []
 
@@ -65,8 +65,42 @@ def get_doing_task_numbers_of_all_users(db: Session) -> List[UserWithDoingTaskDa
                 ),
             )
         )
-    print(vars(user_with_doing_task_data_list[0].doing_task_data))
     return user_with_doing_task_data_list
+
+
+def generate_ranking_of_done_task_count(
+    db: Session,
+) -> List[dict]:
+    users = user_repository.find_all(db=db)
+    done_task_count_user_dictionaries = []
+    for user in users:
+        done_task_count_user_dictionaries.append(
+            {
+                "user": user,
+                "done_task_count": len(
+                    list(filter(lambda task: task.status is Status.DONE, user.tasks))
+                ),
+            }
+        )
+
+    # タスク数の降順でソート
+    sorted_done_task_count_user_dictionaries = sorted(
+        done_task_count_user_dictionaries,
+        key=lambda x: x["done_task_count"],
+        reverse=True,
+    )
+
+    ranking_of_done_task_count = []
+    for index, dictionary in enumerate(sorted_done_task_count_user_dictionaries):
+        rank = index + 1
+        ranking_of_done_task_count.append(
+            {
+                "rank": rank,
+                "user": dictionary["user"],
+                "done_task_count": dictionary["done_task_count"],
+            }
+        )
+    return ranking_of_done_task_count
 
 
 def create(db: Session, username: str, password: str) -> User:

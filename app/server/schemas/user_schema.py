@@ -20,5 +20,18 @@ class DoingTaskDataSchema(BaseModel):
     low_task_count: int
 
 
-class UserWithDoingTaskDataSchema(UserSchemaInDB):
+class UserWithDoingTaskDataSchema(BaseModel):
+    user: UserSchemaInDB
     doing_task_data: DoingTaskDataSchema
+
+    class Config:
+        orm_mode = True
+
+
+class RankingOfDoneTaskCountSchema(BaseModel):
+    rank: int
+    user: UserSchemaInDB
+    done_task_count: int
+
+    class Config:
+        orm_mode = True
