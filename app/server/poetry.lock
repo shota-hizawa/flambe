@@ -69,6 +69,18 @@ doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=6.1.4,<7.0.0)", "markdown-
 test = ["pytest (==5.4.3)", "pytest-cov (==2.10.0)", "pytest-asyncio (>=0.14.0,<0.15.0)", "mypy (==0.790)", "flake8 (>=3.8.3,<4.0.0)", "black (==20.8b1)", "isort (>=5.0.6,<6.0.0)", "requests (>=2.24.0,<3.0.0)", "httpx (>=0.14.0,<0.15.0)", "email_validator (>=1.1.1,<2.0.0)", "sqlalchemy (>=1.3.18,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.4.0)", "orjson (>=3.2.1,<4.0.0)", "async_exit_stack (>=1.0.1,<2.0.0)", "async_generator (>=1.10,<2.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "aiofiles (>=0.5.0,<0.6.0)", "flask (>=1.1.2,<2.0.0)"]
 
 [[package]]
+name = "fastapi-camelcase"
+version = "1.0.2"
+description = "Package provides an easy way to have camelcase request/response bodies for Pydantic"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pydantic = "*"
+pyhumps = "*"
+
+[[package]]
 name = "h11"
 version = "0.12.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -137,6 +149,14 @@ typing-extensions = ">=3.7.4.3"
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
+
+[[package]]
+name = "pyhumps"
+version = "1.6.1"
+description = "🐫  Convert strings (and dictionary keys) between snake case, camel case and pascal case in Python. Inspired by Humps for Node"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "python-dateutil"
@@ -273,7 +293,7 @@ standard = ["websockets (>=8.0.0,<9.0.0)", "watchgod (>=0.6)", "python-dotenv (>
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9cb79ef2b539620cce89662c863db1592a17518b4a7e24a65d03cecc64b64358"
+content-hash = "3d43585401360fd13ce6909d7d0132519ac17879772eca7b41c8dc8e4c339acc"
 
 [metadata.files]
 alembic = [
@@ -294,6 +314,9 @@ click = [
 fastapi = [
     {file = "fastapi-0.63.0-py3-none-any.whl", hash = "sha256:98d8ea9591d8512fdadf255d2a8fa56515cdd8624dca4af369da73727409508e"},
     {file = "fastapi-0.63.0.tar.gz", hash = "sha256:63c4592f5ef3edf30afa9a44fa7c6b7ccb20e0d3f68cd9eba07b44d552058dcb"},
+]
+fastapi-camelcase = [
+    {file = "fastapi_camelcase-1.0.2.tar.gz", hash = "sha256:1d852149f6c9e5bb8002839a1e024050af917f1944b9d108d56468d64c6da279"},
 ]
 h11 = [
     {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},
@@ -395,6 +418,10 @@ pydantic = [
     {file = "pydantic-1.8.1-cp39-cp39-win_amd64.whl", hash = "sha256:e8bc082afef97c5fd3903d05c6f7bb3a6af9fc18631b4cc9fedeb4720efb0c58"},
     {file = "pydantic-1.8.1-py3-none-any.whl", hash = "sha256:e3f8790c47ac42549dc8b045a67b0ca371c7f66e73040d0197ce6172b385e520"},
     {file = "pydantic-1.8.1.tar.gz", hash = "sha256:26cf3cb2e68ec6c0cfcb6293e69fb3450c5fd1ace87f46b64f678b0d29eac4c3"},
+]
+pyhumps = [
+    {file = "pyhumps-1.6.1-py3-none-any.whl", hash = "sha256:58b367b73c57b64e32d211dc769addabd68ff6db07ce64b2e6565f7d5a12291f"},
+    {file = "pyhumps-1.6.1.tar.gz", hash = "sha256:01612603c5ad73a407299d806d30708a3935052276fdd93776953bccc0724e0a"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
