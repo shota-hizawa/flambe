@@ -1,7 +1,8 @@
-from pydantic import BaseModel, constr
+from pydantic import constr
+from fastapi_camelcase import CamelModel
 
 
-class UserSchemaInDB(BaseModel):
+class UserSchemaInDB(CamelModel):
     id: int
     username: str
 
@@ -9,18 +10,18 @@ class UserSchemaInDB(BaseModel):
         orm_mode = True
 
 
-class CreateUserSchema(BaseModel):
+class CreateUserSchema(CamelModel):
     username: constr(min_length=1, max_length=255)
     password: constr(min_length=8, max_length=255)
 
 
-class DoingTaskDataSchema(BaseModel):
+class DoingTaskDataSchema(CamelModel):
     high_task_count: int
     medium_task_count: int
     low_task_count: int
 
 
-class UserWithDoingTaskDataSchema(BaseModel):
+class UserWithDoingTaskDataSchema(CamelModel):
     user: UserSchemaInDB
     doing_task_data: DoingTaskDataSchema
 
@@ -28,7 +29,7 @@ class UserWithDoingTaskDataSchema(BaseModel):
         orm_mode = True
 
 
-class RankingOfDoneTaskCountSchema(BaseModel):
+class RankingOfDoneTaskCountSchema(CamelModel):
     rank: int
     user: UserSchemaInDB
     done_task_count: int

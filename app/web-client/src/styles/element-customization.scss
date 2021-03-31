@@ -1,0 +1,11 @@
+/* Message Box*/
+.el-message-box__btns {
+    display: flex;
+    flex-direction: row-reverse;
+    .el-button {
+        width: 62px;
+        &--primary {
+            margin-right: 10px;
+        }
+    }
+}
