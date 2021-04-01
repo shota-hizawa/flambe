@@ -61,6 +61,7 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
                     "high_task_count": high_task_count,
                     "medium_task_count": medium_task_count,
                     "low_task_count": low_task_count,
+                    "tasks": user.tasks,
                 },
             }
         )

@@ -1,13 +1,7 @@
 from pydantic import constr
 from fastapi_camelcase import CamelModel
-
-
-class UserSchemaInDB(CamelModel):
-    id: int
-    username: str
-
-    class Config:
-        orm_mode = True
+from schemas.db_schema import UserSchemaInDB, TaskSchemaInDB
+from typing import List
 
 
 class CreateUserSchema(CamelModel):
@@ -19,6 +13,7 @@ class DoingTaskDataSchema(CamelModel):
     high_task_count: int
     medium_task_count: int
     low_task_count: int
+    tasks: List[TaskSchemaInDB]
 
 
 class UserWithDoingTaskDataSchema(CamelModel):
