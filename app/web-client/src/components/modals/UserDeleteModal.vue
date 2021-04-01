@@ -38,7 +38,7 @@
 import { defineComponent, PropType, ref } from "@vue/composition-api";
 import apiInvoker from "@/api/ApiInvoker";
 import { MessageBox } from "element-ui";
-import User from "@/models/user";
+import User from "@/models/User";
 
 type Props = {
   user: User;

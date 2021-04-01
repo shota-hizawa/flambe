@@ -1,4 +1,4 @@
-import User from "@/models/user";
+import User from "@/models/User";
 import DoingTaskData from "@/models/DoingTaskData";
 
 export default interface GetUserWithDoingTaskDataResponse {

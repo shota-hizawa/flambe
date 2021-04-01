@@ -11,8 +11,8 @@ class UserSchemaInDB(CamelModel):
 
 
 class CreateUserSchema(CamelModel):
-    username: constr(min_length=1, max_length=255)
-    password: constr(min_length=8, max_length=255)
+    username: constr(min_length=4, max_length=100)
+    password: constr(min_length=8, max_length=100)
 
 
 class DoingTaskDataSchema(CamelModel):
