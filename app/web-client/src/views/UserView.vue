@@ -19,6 +19,7 @@
       </el-col>
     </el-row>
     <el-table
+      v-loading="loading"
       class="user-view__table"
       :data="filteredUserWithDoingTask"
       border
@@ -35,7 +36,7 @@
         label="ユーザ名"
         min-width="200"
       ></el-table-column>
-      <el-table-column label="タスク数">
+      <el-table-column label="作業中タスク数">
         <el-table-column
           prop="doingTaskData.highTaskCount"
           label="優先度高"
@@ -83,8 +84,21 @@ export default defineComponent({
     UserDeleteModal,
   },
   setup() {
-    let userWithDoingTask = ref(Array<GetUserWithDoingTaskDataResponse>());
+    /**
+     * テーブルローディング
+     */
+    const loading = ref<boolean>(true);
+    const openLoading = (): void => {
+      loading.value = true;
+    };
+    const closeLoading = (): void => {
+      loading.value = false;
+    };
 
+    /**
+     * ユーザ情報
+     */
+    let userWithDoingTask = ref(Array<GetUserWithDoingTaskDataResponse>());
     const filteredUserWithDoingTask = computed(
       (): Array<GetUserWithDoingTaskDataResponse> => {
         if (!form.usernameFilter) return userWithDoingTask.value;
@@ -93,13 +107,14 @@ export default defineComponent({
         );
       }
     );
-
     const searchUserWithDoingTask = async () => {
+      openLoading();
       userWithDoingTask.value.splice(-userWithDoingTask.value.length);
       const results = await apiInvoker.getUserWithDoingTaskData();
       results.forEach((result) => {
         userWithDoingTask.value.push(result);
       });
+      closeLoading();
     };
 
     /**
@@ -117,6 +132,7 @@ export default defineComponent({
     });
 
     return {
+      loading,
       filteredUserWithDoingTask,
       form,
       searchUserWithDoingTask,

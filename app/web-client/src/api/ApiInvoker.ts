@@ -7,6 +7,9 @@ import dayjs from "dayjs";
 import CreateTaskRequest from "@/api/requests/CreateTaskRequest";
 import UpdateTaskStatusRequest from "@/api/requests/UpdateTaskStatusRequest";
 import UpdateTaskPriorityRequest from "@/api/requests/UpdateTaskPriorityRequest";
+import User from "@/models/User";
+import AssignTaskToUserRequest from "@/api/requests/AssignTaskToUserRequest";
+import RemoveTaskAssignmentFromUserRequest from "@/api/requests/RemoveTaskAssignmentFromUserRequest";
 
 const iso8601Datetime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
 
@@ -21,6 +24,16 @@ class AxiosFactory {
   /**************************************************************************************************
    * ユーザ系
    **************************************************************************************************/
+  public getAllUsers = async (): Promise<Array<User>> => {
+    try {
+      const response = await this.client.get<Array<User>>("/users");
+      return response.data;
+    } catch (e) {
+      this.handleError(e);
+      throw new Error("ユーザ情報の取得に失敗しました。");
+    }
+  };
+
   public getUserWithDoingTaskData = async (): Promise<
     Array<GetUserWithDoingTaskDataResponse>
   > => {
@@ -93,6 +106,28 @@ class AxiosFactory {
     try {
       await this.client.put(`/tasks/${taskId}/priority`, request);
       this.handleSuccess("タスクの優先度を変更しました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  public assignTaskToUser = async (
+    request: AssignTaskToUserRequest
+  ): Promise<void> => {
+    try {
+      await this.client.post("/tasks/assign", request);
+      this.handleSuccess("タスクをアサインしました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  public removeTaskAssignmentFromUser = async (
+    request: RemoveTaskAssignmentFromUserRequest
+  ): Promise<void> => {
+    try {
+      await this.client.post("/tasks/remove-assign", request);
+      this.handleSuccess("タスクのアサインを削除しました。");
     } catch (e) {
       this.handleError(e);
     }
