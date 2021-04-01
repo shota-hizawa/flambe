@@ -5,7 +5,7 @@
         <sidebar @handleSidebarCollapse="onHandleCollapse"></sidebar>
       </el-aside>
       <el-container>
-        <el-main>
+        <el-main class="main">
           <router-view v-if="isMounted" />
         </el-main>
       </el-container>
@@ -61,5 +61,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .container {
   height: 100vh;
+}
+
+.main {
+  min-width: 900px;
 }
 </style>

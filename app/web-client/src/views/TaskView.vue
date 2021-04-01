@@ -43,12 +43,22 @@
           type="primary"
           icon="el-icon-search"
           size="mini"
-          @click="searchTasks"
+          @click="clickSearchButton"
           plain
         >
           検索
         </el-button>
       </el-col>
+    </el-row>
+    <el-row class="task-view__paginator">
+      <el-pagination
+        @current-change="searchTasks"
+        :current-page.sync="currentPage"
+        layout="prev, pager, next"
+        :total="totalPages"
+        :page-size="pageSize"
+      >
+      </el-pagination>
     </el-row>
     <el-table
       v-loading="loading"
@@ -226,15 +236,28 @@ export default defineComponent({
     /**
      * タスク情報
      */
+    const totalTasksCount = ref<number>(0);
+    const currentPage = ref<number>(1);
+    const pageSize = 20;
     let allTasks = ref(Array<Task>());
+    const clickSearchButton = async () => {
+      currentPage.value = 1;
+      await searchTasks();
+    };
     const searchTasks = async () => {
       openLoading();
       allTasks.value.splice(-allTasks.value.length);
-      const results = await apiInvoker.searchTasks({
-        statuses: form.selectedStatuses,
-        priorities: form.selectedPriorities,
-      });
-      results.forEach((result) => {
+      const results = await apiInvoker.searchTasks(
+        {
+          statuses: form.selectedStatuses,
+          priorities: form.selectedPriorities,
+        },
+        currentPage.value - 1,
+        pageSize
+      );
+      totalTasksCount.value = results.total;
+
+      results.items.forEach((result) => {
         allTasks.value.push(result);
       });
       closeLoading();
@@ -262,9 +285,13 @@ export default defineComponent({
       form,
       statuses,
       priorities,
+      totalPages: totalTasksCount,
+      currentPage,
+      pageSize,
       taskStatusFormatter,
       taskPriorityFormatter,
       dateTimeFormatter,
+      clickSearchButton,
       searchTasks,
       tableRowClassName,
       cardBodyStyle,
