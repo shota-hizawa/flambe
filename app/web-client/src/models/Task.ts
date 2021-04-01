@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import User from "@/models/User";
 
-export interface Task {
+export default interface Task {
   id: number;
   title: string;
   description: string;
@@ -11,3 +11,7 @@ export interface Task {
   updatedAt: Dayjs;
   assignees: Array<User>;
 }
+
+export const taskTitleMinLength = 1;
+export const taskTitleMaxLength = 255;
+export const taskDescriptionMaxLength = 255;
