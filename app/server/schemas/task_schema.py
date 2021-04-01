@@ -1,22 +1,9 @@
 from fastapi_camelcase import CamelModel
 from pydantic import constr
-from datetime import datetime
 from typing import Optional, List
 from entities.task import Status, Priority
 from schemas.user_schema import UserSchemaInDB
-
-
-class TaskSchemaInDB(CamelModel):
-    id: int
-    title: str
-    description: Optional[str]
-    status: Status
-    priority: Priority
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        orm_mode = True
+from schemas.db_schema import TaskSchemaInDB
 
 
 class TaskSchema(TaskSchemaInDB):

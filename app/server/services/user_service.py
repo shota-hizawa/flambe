@@ -62,6 +62,11 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
                     "medium_task_count": medium_task_count,
                     "low_task_count": low_task_count,
                 },
+                "incomplete_tasks": sort_tasks_by_priority(
+                    list(
+                        filter(lambda task: task.status is not Status.DONE, user.tasks)
+                    )
+                ),
             }
         )
     return user_with_doing_task_data_list
