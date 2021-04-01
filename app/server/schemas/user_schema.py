@@ -13,12 +13,12 @@ class DoingTaskDataSchema(CamelModel):
     high_task_count: int
     medium_task_count: int
     low_task_count: int
-    tasks: List[TaskSchemaInDB]
 
 
 class UserWithDoingTaskDataSchema(CamelModel):
     user: UserSchemaInDB
     doing_task_data: DoingTaskDataSchema
+    incomplete_tasks: List[TaskSchemaInDB]
 
     class Config:
         orm_mode = True

@@ -26,6 +26,59 @@
       size="mini"
       :default-sort="{ prop: 'user.id', order: 'ascending' }"
     >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-row :gutter="20">
+            <el-card
+              class="box-card"
+              shadow="never"
+              :body-style="cardBodyStyle"
+            >
+              <div slot="header" class="user-view__doing-tasks-card">
+                <span>未完了タスク一覧</span>
+              </div>
+              <el-table
+                :data="props.row.incompleteTasks"
+                size="mini"
+                :row-class-name="tableRowClassName"
+                class="user-view__sub-table"
+              >
+                <el-table-column
+                  prop="id"
+                  label="ID"
+                  min-width="50"
+                ></el-table-column>
+                <el-table-column
+                  prop="title"
+                  label="タイトル"
+                  min-width="150"
+                  show-overflow-tooltip
+                ></el-table-column>
+                <el-table-column
+                  prop="status"
+                  label="ステータス"
+                  min-width="85"
+                  :formatter="taskStatusFormatter"
+                ></el-table-column>
+                <el-table-column
+                  prop="priority"
+                  label="優先度"
+                  min-width="85"
+                  :formatter="taskPriorityFormatter"
+                  class-name="priority-column"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="createdAt"
+                  label="作成日時"
+                  min-width="165"
+                  :formatter="dateTimeFormatter"
+                ></el-table-column>
+              </el-table>
+            </el-card>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="user.id"
         label="ID"
@@ -77,6 +130,10 @@ import {
 } from "@vue/composition-api";
 import UserCreateModal from "@/components/modals/UserCreateModal.vue";
 import UserDeleteModal from "@/components/modals/UserDeleteModal.vue";
+import { taskStatusFormatter } from "@/models/TaskStatus";
+import { TaskPriority, taskPriorityFormatter } from "@/models/TaskPriority";
+import { dateTimeFormatter } from "@/utils/daiteTImeFormatter";
+import Task from "@/models/Task";
 
 export default defineComponent({
   components: {
@@ -117,6 +174,12 @@ export default defineComponent({
       closeLoading();
     };
 
+    const tableRowClassName = ({ row }: { row: Task }): string | undefined => {
+      if (row.priority === TaskPriority.HIGH) return "high-priority-row";
+      if (row.priority === TaskPriority.MEDIUM) return "medium-priority-row";
+      if (row.priority === TaskPriority.LOW) return "low-priority-row";
+    };
+
     /**
      * フォーム
      */
@@ -131,11 +194,18 @@ export default defineComponent({
       await searchUserWithDoingTask();
     });
 
+    const cardBodyStyle = { padding: "10px" };
+
     return {
       loading,
       filteredUserWithDoingTask,
       form,
       searchUserWithDoingTask,
+      cardBodyStyle,
+      taskStatusFormatter,
+      taskPriorityFormatter,
+      dateTimeFormatter,
+      tableRowClassName,
     };
   },
 });
@@ -152,6 +222,22 @@ export default defineComponent({
   }
   &__title {
     font-size: $component-title-font-size;
+  }
+  &__sub-table::v-deep .high-priority-row {
+    .priority-column {
+      color: $high-priority-task-color;
+    }
+  }
+
+  &__sub-table::v-deep .medium-priority-row {
+    .priority-column {
+      color: $medium-priority-task-color;
+    }
+  }
+  &__sub-table::v-deep .low-priority-row {
+    .priority-column {
+      color: $low-priority-task-color;
+    }
   }
 }
 </style>

@@ -263,8 +263,7 @@ export default defineComponent({
       closeLoading();
     };
 
-    // eslint-disable-next-line
-    const tableRowClassName = ({row} : {row: Task}): string | undefined => {
+    const tableRowClassName = ({ row }: { row: Task }): string | undefined => {
       if (row.priority === TaskPriority.HIGH) return "high-priority-row";
       if (row.priority === TaskPriority.MEDIUM) return "medium-priority-row";
       if (row.priority === TaskPriority.LOW) return "low-priority-row";
