@@ -1,3 +1,26 @@
+# server
+
+## 構成
+
+```
+.
+├── Dockerfile
+├── alembic.ini    - alembicの設定ファイル
+├── config.py      - 環境変数読み込みファイル
+├── controllers    - コントローラ
+├── database.py    - DBとの接続設定等
+├── entities       - データエンティティの定義
+├── exceptions     - 例外関連クラス
+├── main.py
+├── migrations     - マイグレーションファイル、設定ファイル等
+├── poetry.lock
+├── pyproject.toml
+├── repositories   - DBのクエリ発行を担うクラス
+├── schemas   　　　- Pydanticによるスキーマ定義
+├── services       - サービス
+└── utils          - ユーティリティ
+```
+
 ## 開発環境について
 ### IDE
 PyCharmを推奨

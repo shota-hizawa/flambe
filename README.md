@@ -1,6 +1,23 @@
 # flambe
 TODO app powered by Fast API and Vue.js
 
+## 構成
+```
+.
+├── README.md
+├── app
+│   ├── server     - Fast APIで実装されたAPIサーバ
+│   └── web-client - Vue.jsで実装されたWebクライアント
+├── db - ローカルDB用のファイル
+│   ├── Dockerfile
+│   ├── custom-config.cnf
+│   └── initdb.d
+├── doc
+│   ├── 機能一覧.md
+│   └── テーブル定義
+├── docker-compose.yml
+```
+
 ## 起動
 ```
 docker-compose up -d

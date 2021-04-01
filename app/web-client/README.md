@@ -1,5 +1,31 @@
 # web-client
 
+## 構成
+```
+.
+├── Dockerfile
+├── babel.config.js
+├── package-lock.json
+├── package.json
+├── public
+│   ├── favicon.ico
+│   └── index.html
+├── src
+│   ├── App.vue
+│   ├── api         - APIのリクエスト・レスポンス定義、呼び出し処理等
+│   ├── assets
+│   ├── components  - 各種コンポーネント
+│   ├── main.ts     - エントリポイント
+│   ├── models
+│   ├── router
+│   ├── styles      - グローバルスタイル
+│   ├── type.d.ts
+│   ├── utils       - ユーティリティ
+│   └── views       - 各画面と対応するコンポーネント
+├── tsconfig.json
+└── vue.config.js
+```
+
 ### IDE
 WebStormを推奨
 
