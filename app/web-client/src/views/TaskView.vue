@@ -11,6 +11,7 @@
       </el-col>
     </el-row>
     <el-table
+      v-loading="loading"
       class="task-view__table"
       :data="allTasks"
       border
@@ -39,15 +40,33 @@
                 shadow="never"
                 :body-style="cardBodyStyle"
               >
-                <div slot="header">
+                <div slot="header" class="task-view__assignees-card">
                   <span>担当者</span>
+                  <task-assign-user-modal
+                    :task="props.row"
+                    @task-assigned="searchAllTasks"
+                  ></task-assign-user-modal>
                 </div>
                 <el-table
                   :data="props.row.assignees"
                   size="mini"
                   :show-header="false"
                 >
-                  <el-table-column prop="username"></el-table-column>
+                  <el-table-column
+                    prop="username"
+                    min-width="200"
+                  ></el-table-column>
+                  <el-table-column min-width="150">
+                    <template slot-scope="scope">
+                      <el-row class="task-view__operation-assign-column">
+                        <task-remove-assignment-user-modal
+                          :task="props.row"
+                          :user="scope.row"
+                          @task-assignment-removed="searchAllTasks"
+                        ></task-remove-assignment-user-modal>
+                      </el-row>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </el-card>
             </el-col>
@@ -115,6 +134,8 @@ import TaskCreateModal from "@/components/modals/TaskCreateModal.vue";
 import TaskDeleteModal from "@/components/modals/TaskDeleteModal.vue";
 import TaskStatusUpdateModal from "@/components/modals/TaskStatusUpdateModal.vue";
 import TaskPriorityUpdateModal from "@/components/modals/TaskPriorityUpdateModal.vue";
+import TaskAssignUserModal from "@/components/modals/TaskAssignUserModal.vue";
+import TaskRemoveAssignmentUserModal from "@/components/modals/TaskRemoveAssignmentUserModal.vue";
 
 export default defineComponent({
   components: {
@@ -122,8 +143,24 @@ export default defineComponent({
     TaskDeleteModal,
     TaskStatusUpdateModal,
     TaskPriorityUpdateModal,
+    TaskAssignUserModal,
+    TaskRemoveAssignmentUserModal,
   },
   setup() {
+    /**
+     * テーブルローディング
+     */
+    const loading = ref<boolean>(true);
+    const openLoading = (): void => {
+      loading.value = true;
+    };
+    const closeLoading = (): void => {
+      loading.value = false;
+    };
+
+    /**
+     * タスク情報
+     */
     let allTasks = ref(Array<Task>());
 
     // const filteredUserWithDoingTask = computed(
@@ -134,13 +171,14 @@ export default defineComponent({
     //     );
     //   }
     // );
-
     const searchAllTasks = async () => {
+      openLoading();
       allTasks.value.splice(-allTasks.value.length);
       const results = await apiInvoker.getAllTasks();
       results.forEach((result) => {
         allTasks.value.push(result);
       });
+      closeLoading();
     };
 
     // eslint-disable-next-line
@@ -167,6 +205,7 @@ export default defineComponent({
     });
 
     return {
+      loading,
       allTasks,
       taskStatusFormatter,
       taskPriorityFormatter,
@@ -193,6 +232,12 @@ export default defineComponent({
   }
   &__title {
     font-size: $component-title-font-size;
+  }
+
+  &__assignees-card {
+    display: flex;
+    justify-content: space-between;
+    height: 13px;
   }
 
   &__operation-column::v-deep .el-button {
