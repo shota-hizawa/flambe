@@ -1,6 +1,20 @@
 # flambe
 TODO app powered by Fast API and Vue.js
 
+## 起動
+```
+docker-compose up -d
+```
+
+- `localhost:9000`
+  Webクライアント
+- `localhost:8000`
+  APIサーバ
+- `localhost:8000/docs`
+  API定義（Swagger UI)
+- `localhost:8000/redoc`
+  API定義（Redoc）
+
 ## Commit Message Format
 ```
 <prefix>: <変更内容>
