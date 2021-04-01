@@ -11,7 +11,7 @@ services:
       - ./app/server:/usr/src/app
     ports:
       - "8000:8000"
-    command: ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0"]
+    command: [ "uvicorn", "main:app", "--reload", "--host", "0.0.0.0" ]
     environment:
       TZ: Asia/Tokyo
     env_file:
@@ -28,3 +28,18 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: flambe_dev
       TZ: Asia/Tokyo
+
+  web-client:
+    image: flambe-web-client
+    build: ./app/web-client
+    container_name: flambe-web-client
+    ports:
+      - 9000:9000
+    volumes:
+      - ./app/web-client:/usr/src/app
+      - /usr/src/app/node_modules
+    command: [ "npm", "run", "serve" ]
+    environment:
+      TZ: Asia/Tokyo
+      # 開発環境でホットリロードを即時反映するための環境変数
+      CHOKIDAR_USEPOLLING: "true"
