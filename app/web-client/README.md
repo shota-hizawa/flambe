@@ -1,24 +1,18 @@
 # web-client
 
-## Project setup
-```
-npm install
-```
+### IDE
+WebStormを推奨
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### プロジェクト管理
+npmを使用。  
+lockfileのバージョンが2であるnodeを前提としている。  
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### Code Formatter
+eslint + prettier  
+コミット時に自動実行。
 
-### Lints and fixes files
+### 開発サーバログの表示
+プロジェクトルートのdocker-composeを起動して
 ```
-npm run lint
+docker logs flambe-web-client -f
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
