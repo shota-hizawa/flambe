@@ -11,6 +11,22 @@ def get_all(db: Session) -> List[Task]:
     return task_repository.find_all(db=db)
 
 
+def get_tasks_filtered_by_status_and_priority_schema(
+    filtering_statuses: List[Status], filtering_priorities: List[Priority], db: Session
+) -> List[Task]:
+    # 指定されてない条件は全検索にする
+    if len(filtering_statuses) == 0:
+        filtering_statuses = list(map(Status, Status))
+    if len(filtering_priorities) == 0:
+        filtering_priorities = list(map(Priority, Priority))
+
+    return task_repository.find_by_statuses_and_priorities(
+        filtering_statuses=filtering_statuses,
+        filtering_priorities=filtering_priorities,
+        db=db,
+    )
+
+
 def get_incomplete_tasks(db: Session) -> List[Task]:
     tasks = task_repository.find_by_status_not_done(db=db)
 

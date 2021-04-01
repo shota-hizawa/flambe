@@ -29,6 +29,11 @@ class CreateTaskSchema(CamelModel):
     priority: Priority
 
 
+class GetTasksFilteredByStatusAndPrioritySchema(CamelModel):
+    statuses: List[Status]
+    priorities: List[Priority]
+
+
 class UpdateTaskStatusSchema(CamelModel):
     new_status: Status
 

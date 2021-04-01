@@ -21,6 +21,18 @@ def find_by_status_not_done(db: Session) -> List[Task]:
     return db.query(Task).filter(Task.status is not Status.DONE).all()
 
 
+def find_by_statuses_and_priorities(
+    filtering_statuses: List[Status], filtering_priorities: List[Priority], db: Session
+) -> List[Task]:
+    return (
+        db.query(Task)
+        .filter(
+            Task.status.in_(filtering_statuses), Task.priority.in_(filtering_priorities)
+        )
+        .all()
+    )
+
+
 def create(
     db: Session,
     title: str,

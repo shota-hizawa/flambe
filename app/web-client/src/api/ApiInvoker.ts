@@ -10,6 +10,7 @@ import UpdateTaskPriorityRequest from "@/api/requests/UpdateTaskPriorityRequest"
 import User from "@/models/User";
 import AssignTaskToUserRequest from "@/api/requests/AssignTaskToUserRequest";
 import RemoveTaskAssignmentFromUserRequest from "@/api/requests/RemoveTaskAssignmentFromUserRequest";
+import GetTasksFilteredByStatusesAndPrioritiesRequest from "@/api/requests/GetTasksFilteredByStatusesAndPrioritiesRequest";
 
 const iso8601Datetime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
 
@@ -71,6 +72,21 @@ class AxiosFactory {
   public getAllTasks = async (): Promise<Array<Task>> => {
     try {
       const response = await this.client.get<Array<Task>>("/tasks");
+      return response.data;
+    } catch (e) {
+      this.handleError(e);
+      throw new Error("タスク情報の取得に失敗しました。");
+    }
+  };
+
+  public searchTasks = async (
+    request: GetTasksFilteredByStatusesAndPrioritiesRequest
+  ): Promise<Array<Task>> => {
+    try {
+      const response = await this.client.post<Array<Task>>(
+        "/tasks/search",
+        request
+      );
       return response.data;
     } catch (e) {
       this.handleError(e);

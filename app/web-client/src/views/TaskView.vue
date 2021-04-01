@@ -6,8 +6,48 @@
       <el-col :span="24">
         <task-create-modal
           class="task-view__controller-parts"
-          @task-created="searchAllTasks"
+          @task-created="searchTasks"
         ></task-create-modal>
+        <el-select
+          class="task-view__controller-parts"
+          v-model="form.selectedStatuses"
+          multiple
+          placeholder="ステータスでフィルタ"
+          size="mini"
+          style="width: 250px"
+        >
+          <el-option
+            v-for="i in statuses"
+            :key="i[0]"
+            :label="i[1]"
+            :value="i[0]"
+          />
+        </el-select>
+        <el-select
+          class="task-view__controller-parts"
+          v-model="form.selectedPriorities"
+          multiple
+          placeholder="優先度でフィルタ"
+          size="mini"
+          style="width: 250px"
+        >
+          <el-option
+            v-for="i in priorities"
+            :key="i[0]"
+            :label="i[1]"
+            :value="i[0]"
+          />
+        </el-select>
+        <el-button
+          class="task-view__controller-parts-button"
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="searchTasks"
+          plain
+        >
+          検索
+        </el-button>
       </el-col>
     </el-row>
     <el-table
@@ -44,7 +84,7 @@
                   <span>担当者</span>
                   <task-assign-user-modal
                     :task="props.row"
-                    @task-assigned="searchAllTasks"
+                    @task-assigned="searchTasks"
                   ></task-assign-user-modal>
                 </div>
                 <el-table
@@ -62,7 +102,7 @@
                         <task-remove-assignment-user-modal
                           :task="props.row"
                           :user="scope.row"
-                          @task-assignment-removed="searchAllTasks"
+                          @task-assignment-removed="searchTasks"
                         ></task-remove-assignment-user-modal>
                       </el-row>
                     </template>
@@ -105,15 +145,15 @@
           <el-row class="task-view__operation-column">
             <task-status-update-modal
               :task="scope.row"
-              @task-status-updated="searchAllTasks"
+              @task-status-updated="searchTasks"
             ></task-status-update-modal>
             <task-priority-update-modal
               :task="scope.row"
-              @task-priority-updated="searchAllTasks"
+              @task-priority-updated="searchTasks"
             ></task-priority-update-modal>
             <task-delete-modal
               :task="scope.row"
-              @task-deleted="searchAllTasks"
+              @task-deleted="searchTasks"
             ></task-delete-modal>
           </el-row>
         </template>
@@ -124,9 +164,21 @@
 
 <script lang="ts">
 import apiInvoker from "@/api/ApiInvoker";
-import { defineComponent, onMounted, ref } from "@vue/composition-api";
-import { taskStatusFormatter } from "@/models/TaskStatus";
-import { taskPriorityFormatter } from "@/models/TaskPriority";
+import {
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+} from "@vue/composition-api";
+import {
+  TaskStatus,
+  taskStatusDisplayNames,
+  taskStatusFormatter,
+} from "@/models/TaskStatus";
+import {
+  taskPriorityDisplayNames,
+  taskPriorityFormatter,
+} from "@/models/TaskPriority";
 import Task from "@/models/Task";
 import { TaskPriority } from "@/models/TaskPriority";
 import { dateTimeFormatter } from "@/utils/daiteTImeFormatter";
@@ -159,22 +211,29 @@ export default defineComponent({
     };
 
     /**
+     * フォーム
+     */
+    const form = reactive<{
+      selectedStatuses: Array<TaskStatus>;
+      selectedPriorities: Array<TaskPriority>;
+    }>({
+      selectedStatuses: [],
+      selectedPriorities: [],
+    });
+    const statuses = Array.from(taskStatusDisplayNames.entries());
+    const priorities = Array.from(taskPriorityDisplayNames.entries());
+
+    /**
      * タスク情報
      */
     let allTasks = ref(Array<Task>());
-
-    // const filteredUserWithDoingTask = computed(
-    //   (): Array<GetUserWithDoingTaskDataResponse> => {
-    //     if (!form.usernameFilter) return userWithDoingTask.value;
-    //     return userWithDoingTask.value.filter((userWithDoingTask) =>
-    //       userWithDoingTask.user.username.includes(form.usernameFilter)
-    //     );
-    //   }
-    // );
-    const searchAllTasks = async () => {
+    const searchTasks = async () => {
       openLoading();
       allTasks.value.splice(-allTasks.value.length);
-      const results = await apiInvoker.getAllTasks();
+      const results = await apiInvoker.searchTasks({
+        statuses: form.selectedStatuses,
+        priorities: form.selectedPriorities,
+      });
       results.forEach((result) => {
         allTasks.value.push(result);
       });
@@ -191,26 +250,22 @@ export default defineComponent({
     const cardBodyStyle = { padding: "10px" };
 
     /**
-     * フォーム
-     */
-    // const form = reactive({
-    //   usernameFilter: "",
-    // });
-
-    /**
      * ライフサイクルフック
      */
     onMounted(async () => {
-      await searchAllTasks();
+      await searchTasks();
     });
 
     return {
       loading,
       allTasks,
+      form,
+      statuses,
+      priorities,
       taskStatusFormatter,
       taskPriorityFormatter,
       dateTimeFormatter,
-      searchAllTasks,
+      searchTasks,
       tableRowClassName,
       cardBodyStyle,
       TaskPriority,
@@ -221,7 +276,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "../styles/common-style-variables";
-//@import "~element-ui/packages/theme-chalk/src/index";
 
 .task-view {
   &__controller {
@@ -229,6 +283,9 @@ export default defineComponent({
   }
   &__controller-parts {
     margin-right: 15px;
+  }
+  &__controller-parts-button {
+    width: $normal-button-size;
   }
   &__title {
     font-size: $component-title-font-size;

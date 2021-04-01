@@ -8,6 +8,7 @@ from schemas.task_schema import (
     UpdateTaskPrioritySchema,
     AssignTaskSchema,
     RemoveAssignmentTaskSchema,
+    GetTasksFilteredByStatusAndPrioritySchema,
 )
 from sqlalchemy.orm import Session
 from typing import List
@@ -18,6 +19,18 @@ router = APIRouter()
 @router.get("/", response_model=List[TaskSchema])
 async def get_all_tasks(db: Session = Depends(get_db)):
     return task_service.get_all(db=db)
+
+
+@router.post("/search", response_model=List[TaskSchema])
+async def get_tasks_filtered_by_status_and_priority(
+    get_tasks_filtered_by_status_and_priority_schema: GetTasksFilteredByStatusAndPrioritySchema,
+    db: Session = Depends(get_db),
+):
+    return task_service.get_tasks_filtered_by_status_and_priority_schema(
+        filtering_statuses=get_tasks_filtered_by_status_and_priority_schema.statuses,
+        filtering_priorities=get_tasks_filtered_by_status_and_priority_schema.priorities,
+        db=db,
+    )
 
 
 @router.get("/incomplete", response_model=List[TaskSchema])
