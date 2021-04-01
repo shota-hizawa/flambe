@@ -38,6 +38,7 @@ async def create_task(
         db=db,
         title=create_task_schema.title,
         description=create_task_schema.description,
+        priority=create_task_schema.priority,
     )
 
 

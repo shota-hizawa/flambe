@@ -32,8 +32,15 @@ def get_incomplete_and_not_assigned_tasks(db: Session) -> List[Task]:
     )
 
 
-def create(db: Session, title: str, description: Optional[str]) -> Task:
-    created_task = task_repository.create(db=db, title=title, description=description)
+def create(
+    db: Session,
+    title: str,
+    description: Optional[str],
+    priority: Priority,
+) -> Task:
+    created_task = task_repository.create(
+        db=db, title=title, description=description, priority=priority
+    )
     db.commit()
     return created_task
 
