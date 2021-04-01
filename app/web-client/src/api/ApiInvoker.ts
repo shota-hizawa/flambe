@@ -10,6 +10,8 @@ import UpdateTaskPriorityRequest from "@/api/requests/UpdateTaskPriorityRequest"
 import User from "@/models/User";
 import AssignTaskToUserRequest from "@/api/requests/AssignTaskToUserRequest";
 import RemoveTaskAssignmentFromUserRequest from "@/api/requests/RemoveTaskAssignmentFromUserRequest";
+import GetTasksFilteredByStatusesAndPrioritiesRequest from "@/api/requests/GetTasksFilteredByStatusesAndPrioritiesRequest";
+import PaginatedResponse from "@/api/responses/PaginatedResponse";
 
 const iso8601Datetime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
 
@@ -68,9 +70,17 @@ class AxiosFactory {
   /**************************************************************************************************
    * タスク系
    **************************************************************************************************/
-  public getAllTasks = async (): Promise<Array<Task>> => {
+  public searchTasks = async (
+    request: GetTasksFilteredByStatusesAndPrioritiesRequest,
+    page: number,
+    size: number
+  ): Promise<PaginatedResponse<Task>> => {
     try {
-      const response = await this.client.get<Array<Task>>("/tasks");
+      // 1ページの取得数は20で固定にする
+      const response = await this.client.post<PaginatedResponse<Task>>(
+        `/tasks/search?page=${page}&size=${size}`,
+        request
+      );
       return response.data;
     } catch (e) {
       this.handleError(e);

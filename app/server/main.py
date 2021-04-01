@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 from controllers.user_controller import router as user_router
 from controllers.task_controller import router as task_router
 from exceptions.system_exception import InternalServerException
@@ -23,6 +24,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+add_pagination(app)
 
 
 @app.exception_handler(Exception)
