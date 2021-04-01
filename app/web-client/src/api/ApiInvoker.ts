@@ -2,6 +2,13 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { Notification } from "element-ui";
 import GetUserWithDoingTaskDataResponse from "@/api/responses/GetUserWithDoingTaskDataResponse";
 import CreateUserRequest from "@/api/requests/CreateUserRequest";
+import Task from "@/models/Task";
+import dayjs from "dayjs";
+import CreateTaskRequest from "@/api/requests/CreateTaskRequest";
+import UpdateTaskStatusRequest from "@/api/requests/UpdateTaskStatusRequest";
+import UpdateTaskPriorityRequest from "@/api/requests/UpdateTaskPriorityRequest";
+
+const iso8601Datetime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
 
 class AxiosFactory {
   readonly baseUrl: string = process.env.VUE_APP_WEB_SERVER_ENDPOINT;
@@ -46,6 +53,61 @@ class AxiosFactory {
   };
 
   /**************************************************************************************************
+   * タスク系
+   **************************************************************************************************/
+  public getAllTasks = async (): Promise<Array<Task>> => {
+    try {
+      const response = await this.client.get<Array<Task>>("/tasks");
+      return response.data;
+    } catch (e) {
+      this.handleError(e);
+      throw new Error("タスク情報の取得に失敗しました。");
+    }
+  };
+
+  public createTask = async (request: CreateTaskRequest): Promise<void> => {
+    try {
+      await this.client.post("/tasks", request);
+      this.handleSuccess("新規タスクを追加しました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  public updateTaskStatus = async (
+    taskId: number,
+    request: UpdateTaskStatusRequest
+  ): Promise<void> => {
+    try {
+      await this.client.put(`/tasks/${taskId}/status`, request);
+      this.handleSuccess("タスクのステータスを変更しました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  public updateTaskPriority = async (
+    taskId: number,
+    request: UpdateTaskPriorityRequest
+  ): Promise<void> => {
+    try {
+      await this.client.put(`/tasks/${taskId}/priority`, request);
+      this.handleSuccess("タスクの優先度を変更しました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  public deleteTask = async (taskId: number): Promise<void> => {
+    try {
+      await this.client.delete(`/tasks/${taskId}`);
+      this.handleSuccess("タスクを削除しました。");
+    } catch (e) {
+      this.handleError(e);
+    }
+  };
+
+  /**************************************************************************************************
    * 共通処理
    **************************************************************************************************/
   private handleSuccess = (message: string): void => {
@@ -68,11 +130,31 @@ class AxiosFactory {
     });
   };
 
+  // eslint-disable-next-line
+  private dayjsParseChallenge = (key: string, val: any) => {
+    if (typeof val === "string") {
+      return iso8601Datetime.test(val) ? dayjs(val) : val;
+    } else {
+      return val;
+    }
+  };
+
   private getClient = (): AxiosInstance => {
     return axios.create({
       baseURL: this.baseUrl,
       headers: { "Content-Type": "application/json" },
       responseType: "json",
+      // 可能な場合はレスポンスのフィールドをdayjsに変換する
+      // cf. https://github.com/axios/axios/blob/16b5718954d88fbefe17f0b91101d742b63209c7/lib/defaults.js#L57
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformResponse: (data: any) => {
+        try {
+          return JSON.parse(JSON.stringify(data), this.dayjsParseChallenge);
+        } catch (e) {
+          console.error(e);
+        }
+        return data;
+      },
     });
   };
 }

@@ -26,6 +26,7 @@ class TaskSchema(TaskSchemaInDB):
 class CreateTaskSchema(CamelModel):
     title: constr(min_length=1, max_length=255)
     description: Optional[constr(min_length=0, max_length=255)]
+    priority: Priority
 
 
 class UpdateTaskStatusSchema(CamelModel):

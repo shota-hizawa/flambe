@@ -7,22 +7,22 @@
       @click="openDialog"
       plain
     >
-      ユーザ削除
+      タスク削除
     </el-button>
     <el-dialog
-      title="ユーザ削除"
+      title="タスク削除"
       :visible.sync="isDialogShown"
       width="500px"
       :close-on-click-modal="false"
       :show-close="false"
       :close-on-press-escape="false"
     >
-      ユーザ: {{ user.username }} を削除します。
+      タスク: {{ task.title }} を削除します。
       <div slot="footer" class="dialog-footer">
         <el-button
           class="form__button"
           type="primary"
-          @click="executeCreateUser"
+          @click="executeDeleteTask"
           :loading="isExecuteButtonLoading"
           >実行</el-button
         >
@@ -38,16 +38,16 @@
 import { defineComponent, PropType, ref } from "@vue/composition-api";
 import apiInvoker from "@/api/ApiInvoker";
 import { MessageBox } from "element-ui";
-import User from "@/models/User";
+import Task from "@/models/Task";
 
 type Props = {
-  user: User;
+  task: Task;
 };
 
 export default defineComponent({
   props: {
-    user: {
-      type: Object as PropType<User>,
+    task: {
+      type: Object as PropType<Task>,
       required: true,
     },
   },
@@ -61,9 +61,9 @@ export default defineComponent({
     /**
      * API実行
      */
-    const executeDeleteUser = async (): Promise<void> => {
+    const executeDeleteTask = async (): Promise<void> => {
       try {
-        await MessageBox.confirm("ユーザ削除を実行します。", "実行確認", {
+        await MessageBox.confirm("タスク削除を実行します。", "実行確認", {
           confirmButtonText: "実行",
           cancelButtonText: "戻る",
           type: "info",
@@ -72,18 +72,18 @@ export default defineComponent({
         return;
       }
       isExecuteButtonLoading.value = true;
-      await apiInvoker.deleteUser(props.user.id);
+      await apiInvoker.deleteTask(props.task.id);
 
       isExecuteButtonLoading.value = false;
       isDialogShown.value = false;
-      emit("user-deleted");
+      emit("task-deleted");
     };
 
     return {
       isDialogShown,
       isExecuteButtonLoading,
       openDialog,
-      executeCreateUser: executeDeleteUser,
+      executeDeleteTask,
     };
   },
 });
@@ -91,7 +91,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "src/styles/common-style-variables";
-.content-wrapper {
+.component-wrapper {
   display: inline-block;
 }
 

@@ -9,6 +9,7 @@
           @user-created="searchUserWithDoingTask"
         ></user-create-modal>
         <el-input
+          class="user-view__controller-parts"
           size="mini"
           v-model="form.usernameFilter"
           style="width: 400px"
@@ -27,7 +28,7 @@
       <el-table-column
         prop="user.id"
         label="ID"
-        min-width="100"
+        min-width="50"
       ></el-table-column>
       <el-table-column
         prop="user.username"

@@ -1,28 +1,36 @@
 <template>
   <div class="component-wrapper">
-    <el-button
-      type="danger"
-      icon="el-icon-delete"
-      size="mini"
-      @click="openDialog"
-      plain
-    >
-      ユーザ削除
+    <el-button type="primary" size="mini" @click="openDialog" plain>
+      優先度変更
     </el-button>
     <el-dialog
-      title="ユーザ削除"
+      title="タスク優先度変更"
       :visible.sync="isDialogShown"
-      width="500px"
+      width="600px"
       :close-on-click-modal="false"
       :show-close="false"
       :close-on-press-escape="false"
     >
-      ユーザ: {{ user.username }} を削除します。
+      <p>対象タスク: {{ task.title }}</p>
+      <el-select
+        v-model="form.priority"
+        placeholder="優先度"
+        style="width: 250px"
+      >
+        <el-option
+          v-for="item in priorities"
+          :key="item[0]"
+          :label="item[1]"
+          :value="item[0]"
+        >
+        </el-option>
+      </el-select>
+
       <div slot="footer" class="dialog-footer">
         <el-button
           class="form__button"
           type="primary"
-          @click="executeCreateUser"
+          @click="executeUpdateTask"
           :loading="isExecuteButtonLoading"
           >実行</el-button
         >
@@ -35,35 +43,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from "@vue/composition-api";
+import { defineComponent, PropType, reactive, ref } from "@vue/composition-api";
 import apiInvoker from "@/api/ApiInvoker";
 import { MessageBox } from "element-ui";
-import User from "@/models/User";
+import Task from "@/models/Task";
+import { taskPriorityDisplayNames } from "@/models/TaskPriority";
 
 type Props = {
-  user: User;
+  task: Task;
 };
 
 export default defineComponent({
   props: {
-    user: {
-      type: Object as PropType<User>,
+    task: {
+      type: Object as PropType<Task>,
       required: true,
     },
   },
   setup(props: Props, { emit }) {
     const isDialogShown = ref<boolean>(false);
     const isExecuteButtonLoading = ref<boolean>(false);
+
+    /*
+     * フォーム関連
+     */
+    const form = reactive({
+      priority: props.task.priority,
+    });
+    const resetForm = (): void => {
+      form.priority = props.task.priority;
+    };
     const openDialog = (): void => {
+      resetForm();
       isDialogShown.value = true;
     };
+    const priorities = Array.from(taskPriorityDisplayNames.entries());
 
     /**
      * API実行
      */
-    const executeDeleteUser = async (): Promise<void> => {
+    const executeUpdateTask = async (): Promise<void> => {
       try {
-        await MessageBox.confirm("ユーザ削除を実行します。", "実行確認", {
+        await MessageBox.confirm("タスクの優先度を変更します。", "実行確認", {
           confirmButtonText: "実行",
           cancelButtonText: "戻る",
           type: "info",
@@ -72,18 +93,22 @@ export default defineComponent({
         return;
       }
       isExecuteButtonLoading.value = true;
-      await apiInvoker.deleteUser(props.user.id);
+      await apiInvoker.updateTaskPriority(props.task.id, {
+        newPriority: form.priority,
+      });
 
       isExecuteButtonLoading.value = false;
       isDialogShown.value = false;
-      emit("user-deleted");
+      emit("task-priority-updated");
     };
 
     return {
       isDialogShown,
       isExecuteButtonLoading,
+      form,
       openDialog,
-      executeCreateUser: executeDeleteUser,
+      priorities,
+      executeUpdateTask,
     };
   },
 });
@@ -91,7 +116,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "src/styles/common-style-variables";
-.content-wrapper {
+.component-wrapper {
   display: inline-block;
 }
 

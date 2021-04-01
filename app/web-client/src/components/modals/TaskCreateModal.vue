@@ -7,10 +7,10 @@
       @click="openDialog"
       plain
     >
-      新規ユーザ
+      新規タスク
     </el-button>
     <el-dialog
-      title="新規ユーザ"
+      title="新規タスク"
       :visible.sync="isDialogShown"
       width="800px"
       :close-on-click-modal="false"
@@ -19,20 +19,32 @@
     >
       <el-form class="form__body" label-position="left" label-width="100px">
         <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="ユーザ名">
+          <el-col :span="12">
+            <el-form-item label="タイトル">
               <el-input
-                v-model="form.username"
-                placeholder="ユーザ名を入力してください"
+                v-model="form.title"
+                placeholder="タイトルを入力してください"
               ></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item label="優先度">
+              <el-select v-model="form.priority" placeholder="優先度を選択">
+                <el-option
+                  v-for="i in priorities"
+                  :key="i[0]"
+                  :label="i[1]"
+                  :value="i[0]"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
           <el-col :span="24">
-            <el-form-item label="パスワード">
+            <el-form-item label="説明">
               <el-input
-                v-model="form.password"
-                type="password"
-                placeholder="パスワードを入力してください"
+                v-model="form.description"
+                type="textarea"
+                placeholder="タスクの説明を入力してください"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -59,13 +71,13 @@
 import { computed, defineComponent, reactive, ref } from "@vue/composition-api";
 import apiInvoker from "@/api/ApiInvoker";
 import { MessageBox, Notification } from "element-ui";
-import CreateUserRequest from "@/api/requests/CreateUserRequest";
+import { TaskPriority, taskPriorityDisplayNames } from "@/models/TaskPriority";
 import {
-  usernameMaxLength,
-  usernameMinLength,
-  userPasswordMaxLength,
-  userPasswordMinLength,
-} from "@/models/User";
+  taskDescriptionMaxLength,
+  taskTitleMaxLength,
+  taskTitleMinLength,
+} from "@/models/Task";
+import CreateTaskRequest from "@/api/requests/CreateTaskRequest";
 
 export default defineComponent({
   setup(_, { emit }) {
@@ -75,17 +87,20 @@ export default defineComponent({
      * フォーム関連
      */
     const form = reactive({
-      username: "",
-      password: "",
+      title: "",
+      description: "",
+      priority: TaskPriority.MEDIUM,
     });
     const isExecuteButtonDisabled = computed((): boolean => {
-      return !form.password && !form.username;
+      return !form.description && !form.title;
     });
     const isExecuteButtonLoading = ref<boolean>(false);
     const resetForm = (): void => {
-      form.username = "";
-      form.password = "";
+      form.title = "";
+      form.description = "";
+      form.priority = TaskPriority.MEDIUM;
     };
+    const priorities = Array.from(taskPriorityDisplayNames.entries());
     const openDialog = (): void => {
       resetForm();
       isDialogShown.value = true;
@@ -94,16 +109,17 @@ export default defineComponent({
     /**
      * API実行
      */
-    const executeCreateUser = async (): Promise<void> => {
+    const executeCreateTask = async (): Promise<void> => {
       const request = {
-        username: form.username,
-        password: form.password,
+        title: form.title,
+        description: form.description,
+        priority: form.priority,
       };
 
       validateRequest(request);
 
       try {
-        await MessageBox.confirm("新規ユーザを作成します。", "実行確認", {
+        await MessageBox.confirm("新規タスクを作成します。", "実行確認", {
           confirmButtonText: "実行",
           cancelButtonText: "戻る",
           type: "info",
@@ -113,32 +129,29 @@ export default defineComponent({
       }
       isExecuteButtonLoading.value = true;
 
-      await apiInvoker.createUser(request);
+      await apiInvoker.createTask(request);
 
       isExecuteButtonLoading.value = false;
       isDialogShown.value = false;
-      emit("user-created");
+      emit("task-created");
     };
 
-    const validateRequest = (request: CreateUserRequest): void => {
+    const validateRequest = (request: CreateTaskRequest): void => {
       if (
-        request.username.length < usernameMinLength ||
-        request.username.length > usernameMaxLength
+        request.title.length < taskTitleMinLength ||
+        request.title.length > taskTitleMaxLength
       ) {
         Notification.error({
           title: "Error: 入力エラー",
-          message: `ユーザ名は${usernameMinLength}文字以上${usernameMaxLength}文字以下で入力してください`,
+          message: `タスク名は${taskTitleMinLength}文字以上${taskTitleMaxLength}文字以内で入力してください`,
         });
         throw new Error();
       }
 
-      if (
-        request.password.length < userPasswordMinLength ||
-        request.password.length > userPasswordMaxLength
-      ) {
+      if (request.description.length > taskDescriptionMaxLength) {
         Notification.error({
           title: "Error: 入力エラー",
-          message: `パスワードは${userPasswordMinLength}文字以上${userPasswordMaxLength}文字以下で入力してください`,
+          message: `タスクの説明は${taskDescriptionMaxLength}文字以内で入力してください`,
         });
         throw new Error();
       }
@@ -147,10 +160,11 @@ export default defineComponent({
     return {
       isDialogShown,
       form,
+      priorities,
       isExecuteButtonDisabled,
       isExecuteButtonLoading,
       openDialog,
-      executeCreateUser,
+      executeCreateUser: executeCreateTask,
     };
   },
 });

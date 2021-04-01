@@ -1,14 +1,23 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import UserView from "@/views/UserView.vue";
 
 Vue.use(VueRouter);
+
+function loadView(viewName: string) {
+  return () =>
+    import(/* webpackChunkName: "view-[request]" */ `@/views/${viewName}.vue`);
+}
 
 const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "UserView",
-    component: UserView,
+    component: loadView("UserView"),
+  },
+  {
+    path: "/tasks",
+    name: "TaskView",
+    component: loadView("TaskView"),
   },
 ];
 

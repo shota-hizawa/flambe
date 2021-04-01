@@ -1,4 +1,4 @@
-/* Message Box*/
+/* Message Box */
 .el-message-box__btns {
     display: flex;
     flex-direction: row-reverse;
@@ -8,4 +8,9 @@
             margin-right: 10px;
         }
     }
+}
+
+/* Table Expanded Cell */
+.el-table__expanded-cell {
+    padding: 10px !important;
 }
