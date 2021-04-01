@@ -17,13 +17,20 @@ services:
     env_file:
       - ./app/server/.env.development
 
-  # TODO Volumeをマウントする
+  storage:
+    image: busybox
+    container_name: flambe-db-storage
+    volumes:
+      - ./var/db:/var/lib/mysql
+
   db:
     image: flambe-db
     build: ./db
     container_name: flambe-db
     ports:
       - "3306:3306"
+    volumes_from:
+      - storage
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: flambe_dev
