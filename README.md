@@ -18,10 +18,17 @@ TODO app powered by Fast API and Vue.js
 ├── docker-compose.yml
 ```
 
+app配下の各ディレクトリには、それぞれのアプリケーションに関するREADMEが別途用意されているため各開発者は適宜参照すること。
+- [app/server/README.md](app/server/README.md)
+- [app/web-client/README.md](app/web-client/README.md)
+
 ## 起動
 ```
 docker-compose up -d
 ```
+
+起動時に、`app/server/migrations/versions`内にコミット済みのDBマイグレーションが`alembic`によって実行される。  
+ただし、エンティティを修正・追加した場合はマイグレーションファイルの生成・適用が必要となるので[こちら](app/server/README.md#migrations)を参照すること。
 
 - `localhost:9000`
   Webクライアント
