@@ -18,7 +18,8 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/requirements.txt .
 
 RUN apt-get update && \
-    apt-get -y install gcc libmariadb-dev
+    apt-get -y install gcc libmariadb-dev && \
+    apt-get -y install default-mysql-client
 
 RUN pip install -r requirements.txt
 
