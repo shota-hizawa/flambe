@@ -17,7 +17,7 @@ from typing import List
 router = APIRouter()
 
 
-@router.get("/", response_model=Page[TaskSchema])
+@router.get("", response_model=Page[TaskSchema])
 async def get_all_tasks(db: Session = Depends(get_db)):
     return paginate(task_service.get_all(db=db))
 
@@ -46,7 +46,7 @@ async def get_incomplete_and_not_assigned_tasks(db: Session = Depends(get_db)):
     return task_service.get_incomplete_and_not_assigned_tasks(db=db)
 
 
-@router.post("/", response_model=TaskSchema)
+@router.post("", response_model=TaskSchema)
 async def create_task(
     create_task_schema: CreateTaskSchema, db: Session = Depends(get_db)
 ):

@@ -14,7 +14,7 @@ from typing import List
 router = APIRouter()
 
 
-@router.get("/", response_model=List[UserSchemaInDB])
+@router.get("", response_model=List[UserSchemaInDB])
 async def get_all_users(db: Session = Depends(get_db)):
     return user_service.get_all(db)
 
@@ -36,7 +36,7 @@ async def get_incomplete_tasks_assigned_to_user(
     return user_service.get_incomplete_tasks(db=db, user_id=user_id)
 
 
-@router.post("/", response_model=UserSchemaInDB)
+@router.post("", response_model=UserSchemaInDB)
 async def create_user(
     create_user_schema: CreateUserSchema, db: Session = Depends(get_db)
 ):
