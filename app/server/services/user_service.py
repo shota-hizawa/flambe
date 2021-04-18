@@ -1,4 +1,5 @@
 from repositories import user_repository
+from repositories import task_repository
 from sqlalchemy.orm import Session
 from utils.crypt import encrypt
 from typing import List, cast
@@ -13,15 +14,9 @@ def get_all(db: Session) -> List[User]:
 
 
 def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
-    user = get_user_by_id(db=db, user_id=user_id)
-
-    doing_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.DOING, user.tasks))
+    return task_repository.find_by_user_id_and_status_order_by_status_and_priority(
+        user_id=user_id, filtering_statuses=[Status.TODO, Status.DOING], db=db
     )
-    todo_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.TODO, user.tasks))
-    )
-    return [*doing_tasks, *todo_tasks]
 
 
 def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
