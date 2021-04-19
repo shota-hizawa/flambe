@@ -2,7 +2,7 @@ from entities.task import Task, Status, Priority
 from entities.user import User
 from entities.task_assignment import TaskAssignment
 from sqlalchemy.orm import Session
-from sqlalchemy import case, desc, func, text
+from sqlalchemy import case, desc, func
 from typing import List, Optional, cast
 from exceptions import *
 
@@ -23,7 +23,7 @@ def find_by_status_not_done(db: Session) -> List[Task]:
     return db.query(Task).filter(Task.status is not Status.DONE).all()
 
 
-def find_by_statuses_order_by_status_and_priority(
+def find_by_statuses_order_by_status_asc_and_priority_desc(
     filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     return (
@@ -34,7 +34,7 @@ def find_by_statuses_order_by_status_and_priority(
     )
 
 
-def find_by_user_id_and_status_order_by_status_and_priority(
+def find_by_user_id_and_status_order_by_status_asc_and_priority_desc(
     user_id: int, filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     return (
@@ -46,7 +46,7 @@ def find_by_user_id_and_status_order_by_status_and_priority(
     )
 
 
-def find_by_statuses_and_without_assignees_order_by_status_and_priority(
+def find_by_statuses_and_without_assignees_order_by_status_asc_and_priority_desc(
     filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     # アサイン0のタスクIDを抽出
