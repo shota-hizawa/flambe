@@ -179,15 +179,24 @@ class AxiosFactory {
 
   // エラーメッセージのみ、FastAPIでキャメルケースで取り扱うベストプラクティスが不明なため暫定的にスネークケースを許容
   private handleError = (e: AxiosError): void => {
-    const response = e.response?.data;
-    const code = response.error_code ? response.error_code : "unknown";
-    const message = response.error_msg
-      ? response.error_msg
-      : "unknown error occurred";
-    Notification.error({
-      title: `Error: ${code}`,
-      message: message,
-    });
+    const errorResponse = e.response?.data?.detail;
+    if (errorResponse) {
+      const code = errorResponse.error_code
+        ? errorResponse.error_code
+        : "unknown";
+      const message = errorResponse.error_msg
+        ? errorResponse.error_msg
+        : "unknown error occurred";
+      Notification.error({
+        title: `Error: ${code}`,
+        message: message,
+      });
+    } else {
+      Notification.error({
+        title: "Error: unknown",
+        message: "unknown error occurred",
+      });
+    }
   };
 
   // eslint-disable-next-line
