@@ -52,17 +52,17 @@ import {
 } from "@vue/composition-api";
 import apiInvoker from "@/api/ApiInvoker";
 import { MessageBox, Notification } from "element-ui";
-import Task from "@/models/Task";
+import TaskWithAssignees from "@/models/TaskWithAssignees";
 import User from "@/models/User";
 
 type Props = {
-  task: Task;
+  task: TaskWithAssignees;
 };
 
 export default defineComponent({
   props: {
     task: {
-      type: Object as PropType<Task>,
+      type: Object as PropType<TaskWithAssignees>,
       required: true,
     },
   },

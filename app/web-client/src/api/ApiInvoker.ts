@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { Notification } from "element-ui";
 import GetUserWithDoingTaskDataResponse from "@/api/responses/GetUserWithDoingTaskDataResponse";
 import CreateUserRequest from "@/api/requests/CreateUserRequest";
-import Task from "@/models/Task";
+import TaskWithAssignees from "@/models/TaskWithAssignees";
 import dayjs from "dayjs";
 import CreateTaskRequest from "@/api/requests/CreateTaskRequest";
 import UpdateTaskStatusRequest from "@/api/requests/UpdateTaskStatusRequest";
@@ -74,13 +74,12 @@ class AxiosFactory {
     request: GetTasksFilteredByStatusesAndPrioritiesRequest,
     page: number,
     size: number
-  ): Promise<PaginatedResponse<Task>> => {
+  ): Promise<PaginatedResponse<TaskWithAssignees>> => {
     try {
       // 1ページの取得数は20で固定にする
-      const response = await this.client.post<PaginatedResponse<Task>>(
-        `/tasks/search?page=${page}&size=${size}`,
-        request
-      );
+      const response = await this.client.post<
+        PaginatedResponse<TaskWithAssignees>
+      >(`/tasks/search?page=${page}&size=${size}`, request);
       return response.data;
     } catch (e) {
       this.handleError(e);
