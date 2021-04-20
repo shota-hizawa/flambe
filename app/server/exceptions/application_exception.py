@@ -10,10 +10,8 @@ class ApplicationException(HTTPException):
         self, error: Type[BaseMessage], status_code: int = default_status_code
     ) -> None:
         self.status_code = status_code
-        self.detail = [
-            {
-                "error_code": str(error()),
-                "error_msg": error.text,
-            }
-        ]
+        self.detail = {
+            "error_code": str(error()),
+            "error_msg": error.text,
+        }
         super().__init__(self.status_code, self.detail)

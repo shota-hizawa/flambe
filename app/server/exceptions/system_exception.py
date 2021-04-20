@@ -8,10 +8,10 @@ class InternalServerException(HTTPException):
         self.exc = e
         self.stack_trace = traceback.format_exc()
         self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        self.detail = [
-            {
+        self.detail = {
+            "detail": {
                 "error_code": str(ErrorMessages.InternalServerError()),
                 "error_msg": ErrorMessages.InternalServerError().text,
             }
-        ]
+        }
         super().__init__(self.status_code, self.detail)
