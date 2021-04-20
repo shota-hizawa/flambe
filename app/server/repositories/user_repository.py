@@ -72,7 +72,7 @@ def get_users_with_done_task_count_order_by_done_task_count(
 ) -> List[TypedDict("UserWithDoneTaskCount", {"user": User, "done_task_count": int})]:
     users_with_count_of_done_tasks = (
         db.query(
-            User,
+            User.id.label("user_id"),
             func.count(TaskAssignment.user_id).label("done_task_count"),
         )
         .join(TaskAssignment)
@@ -86,7 +86,7 @@ def get_users_with_done_task_count_order_by_done_task_count(
     return list(
         map(
             lambda result: {
-                "user": result.User,
+                "user_id": result.user_id,
                 "done_task_count": result.done_task_count,
             },
             users_with_count_of_done_tasks,
