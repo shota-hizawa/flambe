@@ -19,15 +19,17 @@ def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
 
 
 def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
+    """
+    全ユーザと、それぞれの未完了タスク数を優先度別で集計したデータを返却する。
+    """
+    users = get_all(db=db)
     users_with_doing_task_count_by_priority = (
-        user_repository.get_users_with_doing_task_count_group_by_priority(db=db)
+        user_repository.get_user_ids_with_doing_task_count_group_by_priority(db=db)
     )
-    users = get_all(db)
 
     results_by_users = {}
     for user in users:
         results_by_users[user.id] = []
-
     for result in users_with_doing_task_count_by_priority:
         results_by_users[result["user_id"]].append(result)
 
