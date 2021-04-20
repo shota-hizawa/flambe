@@ -43,7 +43,7 @@ def get_users_with_doing_task_count_group_by_priority(
 ]:
     users_with_doing_task_count_by_priority = (
         db.query(
-            User,
+            User.id.label("user_id"),
             Task.priority,
             func.count(TaskAssignment.user_id).label("doing_task_count"),
         )
@@ -58,8 +58,7 @@ def get_users_with_doing_task_count_group_by_priority(
     return list(
         map(
             lambda result: {
-                "user_id": result.User.id,
-                "user": result.User,
+                "user_id": result.user_id,
                 "priority": result.priority,
                 "doing_task_count": result.doing_task_count,
             },

@@ -22,23 +22,14 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
     users_with_doing_task_count_by_priority = (
         user_repository.get_users_with_doing_task_count_group_by_priority(db=db)
     )
-    users = list(
-        set(
-            map(
-                lambda user_with_doing_task_count_by_priority: user_with_doing_task_count_by_priority[
-                    "user"
-                ],
-                users_with_doing_task_count_by_priority,
-            )
-        )
-    )
+    users = get_all(db)
 
     results_by_users = {}
     for user in users:
         results_by_users[user.id] = []
 
     for result in users_with_doing_task_count_by_priority:
-        results_by_users[result["user"].id].append(result)
+        results_by_users[result["user_id"]].append(result)
 
     user_with_doing_task_data_list = []
     for user in users:
