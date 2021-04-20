@@ -19,26 +19,19 @@ def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
 
 
 def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
+    """
+    全ユーザと、それぞれの未完了タスク数を優先度別で集計したデータを返却する。
+    """
+    users = get_all(db=db)
     users_with_doing_task_count_by_priority = (
-        user_repository.get_users_with_doing_task_count_group_by_priority(db=db)
-    )
-    users = list(
-        set(
-            map(
-                lambda user_with_doing_task_count_by_priority: user_with_doing_task_count_by_priority[
-                    "user"
-                ],
-                users_with_doing_task_count_by_priority,
-            )
-        )
+        user_repository.get_user_ids_with_doing_task_count_group_by_priority(db=db)
     )
 
     results_by_users = {}
     for user in users:
         results_by_users[user.id] = []
-
     for result in users_with_doing_task_count_by_priority:
-        results_by_users[result["user"].id].append(result)
+        results_by_users[result["user_id"]].append(result)
 
     user_with_doing_task_data_list = []
     for user in users:
@@ -70,20 +63,48 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
 def generate_ranking_of_done_task_count(
     db: Session,
 ) -> List[dict]:
-    users_with_done_task_count = (
-        user_repository.get_users_with_done_task_count_order_by_done_task_count(db=db)
+    """
+    全ユーザと、それぞれの完了タスク数を集計したデータを返却する。
+    """
+
+    # 0. ユーザ一覧をユーザIDをキーとした辞書に変換
+    users = get_all(db=db)
+    users_key_by_user_id = {}
+    for user in users:
+        users_key_by_user_id[user.id] = user
+
+    user_ids_with_done_task_count = (
+        user_repository.get_user_ids_with_done_task_count_order_by_done_task_count(
+            db=db
+        )
     )
 
     ranking_of_done_task_count = []
-    for index, user_with_done_task_count in enumerate(users_with_done_task_count):
-        rank = index + 1
+    rank = 1
+    # 1. 完了タスクがあるユーザから結果データに格納していく
+    for index, user_id_with_done_task_count in enumerate(user_ids_with_done_task_count):
+        user_id = user_id_with_done_task_count["user_id"]
         ranking_of_done_task_count.append(
             {
                 "rank": rank,
-                "user": user_with_done_task_count["user"],
-                "done_task_count": user_with_done_task_count["done_task_count"],
+                "user": users_key_by_user_id[user_id],
+                "done_task_count": user_id_with_done_task_count["done_task_count"],
             }
         )
+        rank += 1
+        users_key_by_user_id.pop(user_id)
+
+    # 2. 完了タスクがないユーザを結果データに格納する（順不同）
+    for user_without_done_task in users_key_by_user_id.values():
+        ranking_of_done_task_count.append(
+            {
+                "rank": rank,
+                "user": user_without_done_task,
+                "done_task_count": 0,
+            }
+        )
+        rank += 1
+
     return ranking_of_done_task_count
 
 

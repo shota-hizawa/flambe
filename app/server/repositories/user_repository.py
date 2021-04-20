@@ -33,7 +33,7 @@ def delete(db: Session, deleted_user: User) -> None:
     db.delete(deleted_user)
 
 
-def get_users_with_doing_task_count_group_by_priority(
+def get_user_ids_with_doing_task_count_group_by_priority(
     db: Session,
 ) -> List[
     TypedDict(
@@ -41,9 +41,12 @@ def get_users_with_doing_task_count_group_by_priority(
         {"user_id": int, "user": User, "priority": Priority, "doing_task_count": int},
     )
 ]:
+    """
+    未完了タスクが存在するユーザのIDと、各未完了タスクの数を優先度別に取得して返却する。
+    """
     users_with_doing_task_count_by_priority = (
         db.query(
-            User,
+            User.id.label("user_id"),
             Task.priority,
             func.count(TaskAssignment.user_id).label("doing_task_count"),
         )
@@ -58,8 +61,7 @@ def get_users_with_doing_task_count_group_by_priority(
     return list(
         map(
             lambda result: {
-                "user_id": result.User.id,
-                "user": result.User,
+                "user_id": result.user_id,
                 "priority": result.priority,
                 "doing_task_count": result.doing_task_count,
             },
@@ -68,12 +70,15 @@ def get_users_with_doing_task_count_group_by_priority(
     )
 
 
-def get_users_with_done_task_count_order_by_done_task_count(
+def get_user_ids_with_done_task_count_order_by_done_task_count(
     db: Session,
 ) -> List[TypedDict("UserWithDoneTaskCount", {"user": User, "done_task_count": int})]:
+    """
+    完了タスクが存在するユーザのIDと、完了タスク数を取得して返却する。
+    """
     users_with_count_of_done_tasks = (
         db.query(
-            User,
+            User.id.label("user_id"),
             func.count(TaskAssignment.user_id).label("done_task_count"),
         )
         .join(TaskAssignment)
@@ -87,7 +92,7 @@ def get_users_with_done_task_count_order_by_done_task_count(
     return list(
         map(
             lambda result: {
-                "user": result.User,
+                "user_id": result.user_id,
                 "done_task_count": result.done_task_count,
             },
             users_with_count_of_done_tasks,
