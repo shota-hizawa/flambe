@@ -1,7 +1,6 @@
 from pydantic import constr
 from fastapi_camelcase import CamelModel
-from schemas.db_schema import UserSchemaInDB, TaskSchemaInDB
-from typing import List
+from schemas.db_schema import UserSchemaInDB
 
 
 class CreateUserSchema(CamelModel):
@@ -18,7 +17,6 @@ class DoingTaskDataSchema(CamelModel):
 class UserWithDoingTaskDataSchema(CamelModel):
     user: UserSchemaInDB
     doing_task_data: DoingTaskDataSchema
-    incomplete_tasks: List[TaskSchemaInDB]
 
     class Config:
         orm_mode = True

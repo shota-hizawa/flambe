@@ -1,5 +1,4 @@
 import { Dayjs } from "dayjs";
-import User from "@/models/User";
 
 export default interface Task {
   id: number;
@@ -9,7 +8,6 @@ export default interface Task {
   priority: string;
   createdAt: Dayjs;
   updatedAt: Dayjs;
-  assignees: Array<User>;
 }
 
 export const taskTitleMinLength = 1;

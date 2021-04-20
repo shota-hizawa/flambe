@@ -91,7 +91,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "src/styles/common-style-variables";
-.content-wrapper {
+.component-wrapper {
   display: inline-block;
 }
 

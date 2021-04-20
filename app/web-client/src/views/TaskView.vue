@@ -189,7 +189,7 @@ import {
   taskPriorityDisplayNames,
   taskPriorityFormatter,
 } from "@/models/TaskPriority";
-import Task from "@/models/Task";
+import TaskWithAssignees from "@/models/TaskWithAssignees";
 import { TaskPriority } from "@/models/TaskPriority";
 import { dateTimeFormatter } from "@/utils/daiteTImeFormatter";
 import TaskCreateModal from "@/components/modals/TaskCreateModal.vue";
@@ -239,7 +239,7 @@ export default defineComponent({
     const totalTasksCount = ref<number>(0);
     const currentPage = ref<number>(1);
     const pageSize = 20;
-    let allTasks = ref(Array<Task>());
+    let allTasks = ref(Array<TaskWithAssignees>());
     const clickSearchButton = async () => {
       currentPage.value = 1;
       await searchTasks();
@@ -263,7 +263,11 @@ export default defineComponent({
       closeLoading();
     };
 
-    const tableRowClassName = ({ row }: { row: Task }): string | undefined => {
+    const tableRowClassName = ({
+      row,
+    }: {
+      row: TaskWithAssignees;
+    }): string | undefined => {
       if (row.priority === TaskPriority.HIGH) return "high-priority-row";
       if (row.priority === TaskPriority.MEDIUM) return "medium-priority-row";
       if (row.priority === TaskPriority.LOW) return "low-priority-row";

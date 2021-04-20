@@ -1,11 +1,11 @@
 from repositories import user_repository
+from repositories import task_repository
 from sqlalchemy.orm import Session
 from utils.crypt import encrypt
 from typing import List, cast
 from entities import User, Task
 from entities.task import Status, Priority
 from exceptions import *
-from utils.sort import sort_tasks_by_priority
 
 
 def get_all(db: Session) -> List[User]:
@@ -13,47 +13,47 @@ def get_all(db: Session) -> List[User]:
 
 
 def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
-    user = get_user_by_id(db=db, user_id=user_id)
-
-    doing_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.DOING, user.tasks))
+    return task_repository.find_by_user_id_and_status_order_by_status_asc_and_priority_desc(
+        user_id=user_id, filtering_statuses=[Status.TODO, Status.DOING], db=db
     )
-    todo_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.TODO, user.tasks))
-    )
-    return [*doing_tasks, *todo_tasks]
 
 
 def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
-    users = user_repository.find_all(db=db)
-    user_with_doing_task_data_list = []
+    users_with_doing_task_count_by_priority = (
+        user_repository.get_users_with_doing_task_count_group_by_priority(db=db)
+    )
+    users = list(
+        set(
+            map(
+                lambda user_with_doing_task_count_by_priority: user_with_doing_task_count_by_priority[
+                    "user"
+                ],
+                users_with_doing_task_count_by_priority,
+            )
+        )
+    )
 
+    results_by_users = {}
     for user in users:
-        doing_tasks = list(filter(lambda task: task.status is Status.DOING, user.tasks))
-        high_task_count = len(
-            list(
-                filter(
-                    lambda doing_task: doing_task.priority is Priority.HIGH,
-                    doing_tasks,
-                )
-            )
-        )
-        medium_task_count = len(
-            list(
-                filter(
-                    lambda doing_task: doing_task.priority is Priority.MEDIUM,
-                    doing_tasks,
-                )
-            )
-        )
-        low_task_count = len(
-            list(
-                filter(
-                    lambda doing_task: doing_task.priority is Priority.LOW,
-                    doing_tasks,
-                )
-            )
-        )
+        results_by_users[user.id] = []
+
+    for result in users_with_doing_task_count_by_priority:
+        results_by_users[result["user"].id].append(result)
+
+    user_with_doing_task_data_list = []
+    for user in users:
+        high_task_count = 0
+        medium_task_count = 0
+        low_task_count = 0
+
+        for result_related_user in results_by_users[user.id]:
+            if result_related_user["priority"] == Priority.HIGH:
+                high_task_count = result_related_user["doing_task_count"]
+            if result_related_user["priority"] == Priority.MEDIUM:
+                medium_task_count = result_related_user["doing_task_count"]
+            if result_related_user["priority"] == Priority.LOW:
+                low_task_count = result_related_user["doing_task_count"]
+
         user_with_doing_task_data_list.append(
             {
                 "user": user,
@@ -62,11 +62,6 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
                     "medium_task_count": medium_task_count,
                     "low_task_count": low_task_count,
                 },
-                "incomplete_tasks": sort_tasks_by_priority(
-                    list(
-                        filter(lambda task: task.status is not Status.DONE, user.tasks)
-                    )
-                ),
             }
         )
     return user_with_doing_task_data_list
@@ -75,33 +70,18 @@ def get_doing_task_data_of_all_users(db: Session) -> List[dict]:
 def generate_ranking_of_done_task_count(
     db: Session,
 ) -> List[dict]:
-    users = user_repository.find_all(db=db)
-    done_task_count_user_dictionaries = []
-    for user in users:
-        done_task_count_user_dictionaries.append(
-            {
-                "user": user,
-                "done_task_count": len(
-                    list(filter(lambda task: task.status is Status.DONE, user.tasks))
-                ),
-            }
-        )
-
-    # タスク数の降順でソート
-    sorted_done_task_count_user_dictionaries = sorted(
-        done_task_count_user_dictionaries,
-        key=lambda x: x["done_task_count"],
-        reverse=True,
+    users_with_done_task_count = (
+        user_repository.get_users_with_done_task_count_order_by_done_task_count(db=db)
     )
 
     ranking_of_done_task_count = []
-    for index, dictionary in enumerate(sorted_done_task_count_user_dictionaries):
+    for index, user_with_done_task_count in enumerate(users_with_done_task_count):
         rank = index + 1
         ranking_of_done_task_count.append(
             {
                 "rank": rank,
-                "user": dictionary["user"],
-                "done_task_count": dictionary["done_task_count"],
+                "user": user_with_done_task_count["user"],
+                "done_task_count": user_with_done_task_count["done_task_count"],
             }
         )
     return ranking_of_done_task_count

@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from typing import List, Optional, cast
 from entities.task import Task, Status, Priority
 from exceptions import *
-from utils.sort import sort_tasks_by_priority
 
 
 def get_all(db: Session) -> List[Task]:
@@ -28,23 +27,14 @@ def get_tasks_filtered_by_status_and_priority_schema(
 
 
 def get_incomplete_tasks(db: Session) -> List[Task]:
-    tasks = task_repository.find_by_status_not_done(db=db)
-
-    doing_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.DOING, tasks))
+    return task_repository.find_by_statuses_order_by_status_asc_and_priority_desc(
+        filtering_statuses=[Status.TODO, Status.DOING], db=db
     )
-    todo_tasks = sort_tasks_by_priority(
-        list(filter(lambda task: task.status is Status.TODO, tasks))
-    )
-    return [*doing_tasks, *todo_tasks]
 
 
 def get_incomplete_and_not_assigned_tasks(db: Session) -> List[Task]:
-    return list(
-        filter(
-            lambda task: len(task.assignees) is 0,
-            sort_tasks_by_priority(task_repository.find_by_status_not_done(db=db)),
-        )
+    return task_repository.find_by_statuses_and_without_assignees_order_by_status_asc_and_priority_desc(
+        filtering_statuses=[Status.TODO, Status.DOING], db=db
     )
 
 
