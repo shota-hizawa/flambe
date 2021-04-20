@@ -12,6 +12,7 @@ import AssignTaskToUserRequest from "@/api/requests/AssignTaskToUserRequest";
 import RemoveTaskAssignmentFromUserRequest from "@/api/requests/RemoveTaskAssignmentFromUserRequest";
 import GetTasksFilteredByStatusesAndPrioritiesRequest from "@/api/requests/GetTasksFilteredByStatusesAndPrioritiesRequest";
 import PaginatedResponse from "@/api/responses/PaginatedResponse";
+import Task from "@/models/Task";
 
 const iso8601Datetime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
 
@@ -49,6 +50,21 @@ class AxiosFactory {
       throw new Error("ユーザ情報の取得に失敗しました。");
     }
   };
+
+  public getUserIncompleteTasks = async (
+    userId: number
+  ): Promise<Array<Task>> => {
+    try {
+      const response = await this.client.get<Array<TaskWithAssignees>>(
+        `/users/${userId}/tasks/incomplete`
+      );
+      return response.data;
+    } catch (e) {
+      this.handleError(e);
+      throw new Error("ユーザ未完了タスク一覧取得に失敗しました。");
+    }
+  };
+
   public createUser = async (request: CreateUserRequest): Promise<void> => {
     try {
       await this.client.post("/users", request);
