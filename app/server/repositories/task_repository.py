@@ -23,48 +23,48 @@ def find_by_status_not_done(db: Session) -> List[Task]:
     return db.query(Task).filter(Task.status is not Status.DONE).all()
 
 
-def find_by_statuses_order_by_status_asc_and_priority_desc(
+def find_by_statuses_order_by_status_and_priority(
     filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     """
     フィルタ対象のステータスに一致したタスクを取得し、
-    ・ステータスの昇順（TODO-DOING-DONE）
-    ・優先度の降順（HIGH-MEDIUM-LOW）
+    ・ステータス（TODO-DOING-DONE）
+    ・優先度（HIGH-MEDIUM-LOW）
     で並び替えて返却する。
     """
     return (
         db.query(Task)
         .filter(Task.status.in_(filtering_statuses))
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
 
-def find_by_user_id_and_status_order_by_status_asc_and_priority_desc(
+def find_by_user_id_and_status_order_by_status_and_priority(
     user_id: int, filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     """
     フィルタ対象のステータスに一致しかつ指定されたユーザがアサインされているタスクを取得し、
-    ・ステータスの昇順（TODO-DOING-DONE）
-    ・優先度の降順（HIGH-MEDIUM-LOW）
+    ・ステータス（TODO-DOING-DONE）
+    ・優先度（HIGH-MEDIUM-LOW）
     で並び替えて返却する。
     """
     return (
         db.query(Task)
         .outerjoin(TaskAssignment)
         .filter(Task.status.in_(filtering_statuses), TaskAssignment.user_id == user_id)
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
 
-def find_by_statuses_and_without_assignees_order_by_status_asc_and_priority_desc(
+def find_by_statuses_and_without_assignees_order_by_status_and_priority(
     filtering_statuses: List[Status], db: Session
 ) -> List[Task]:
     """
     フィルタ対象のステータスに一致しかつアサインされたユーザが存在しないタスクを取得し、
-    ・ステータスの昇順（TODO-DOING-DONE）
-    ・優先度の降順（HIGH-MEDIUM-LOW）
+    ・ステータス（TODO-DOING-DONE）
+    ・優先度（HIGH-MEDIUM-LOW）
     で並び替えて返却する。
     """
     # アサイン0のタスクIDを抽出
@@ -84,7 +84,7 @@ def find_by_statuses_and_without_assignees_order_by_status_asc_and_priority_desc
         .filter(
             Task.status.in_(filtering_statuses), Task.id.in_(task_ids_without_assignees)
         )
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
@@ -134,13 +134,3 @@ def remove_assignment_from_user(updated_task: Task, assignee: User) -> Task:
 
 def delete(db: Session, deleted_task: Task) -> None:
     db.delete(deleted_task)
-
-
-def status_sort():
-    whens = {Status.TODO: 0, Status.DOING: 1, Status.DONE: 2}
-    return case(value=Task.status, whens=whens).label("status")
-
-
-def priority_sort():
-    whens = {Priority.LOW: 0, Priority.MEDIUM: 1, Priority.HIGH: 2}
-    return case(value=Task.priority, whens=whens).label("priority")
