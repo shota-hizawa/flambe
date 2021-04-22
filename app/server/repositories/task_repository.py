@@ -2,13 +2,17 @@ from entities.task import Task, Status, Priority
 from entities.user import User
 from entities.task_assignment import TaskAssignment
 from sqlalchemy.orm import Session
-from sqlalchemy import case, desc, func
-from typing import List, Optional, cast
+from sqlalchemy import func
+from typing import List, Optional, cast, Tuple
 from exceptions import *
+from fastapi_pagination import Params
 
 
-def find_all(db: Session) -> List[Task]:
-    return db.query(Task).all()  # noqa
+def find_all_by_pagination(db: Session, params: Params) -> Tuple[List[Task], int]:
+    return (
+        db.query(Task).limit(params.size).offset(params.size * params.page).all(),
+        db.query(func.count(Task.id).label("total")).first().total,
+    )
 
 
 def find_by_id(db: Session, task_id: int) -> Task:
@@ -89,15 +93,26 @@ def find_by_statuses_and_without_assignees_order_by_status_and_priority(
     )
 
 
-def find_by_statuses_and_priorities(
-    filtering_statuses: List[Status], filtering_priorities: List[Priority], db: Session
-) -> List[Task]:
+def find_by_statuses_and_priorities_by_pagination(
+    filtering_statuses: List[Status],
+    filtering_priorities: List[Priority],
+    db: Session,
+    params: Params,
+) -> Tuple[List[Task], int]:
     return (
         db.query(Task)
         .filter(
             Task.status.in_(filtering_statuses), Task.priority.in_(filtering_priorities)
         )
-        .all()
+        .limit(params.size)
+        .offset(params.size * params.page)
+        .all(),
+        db.query(func.count(Task.id).label("total"))
+        .filter(
+            Task.status.in_(filtering_statuses), Task.priority.in_(filtering_priorities)
+        )
+        .first()
+        .total,
     )
 
 

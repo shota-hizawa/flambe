@@ -1,7 +1,7 @@
 from services import task_service
 from database import get_db
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page, Params
 from schemas.task_schema import (
     TaskSchema,
     CreateTaskSchema,
@@ -18,22 +18,24 @@ router = APIRouter()
 
 
 @router.get("", response_model=Page[TaskSchema])
-async def get_all_tasks(db: Session = Depends(get_db)):
-    return paginate(task_service.get_all(db=db))
+async def get_all_tasks(db: Session = Depends(get_db), params: Params = Depends()):
+    result = task_service.get_all_by_pagination(db=db, params=params)
+    return Page.create(items=result[0], total=result[1], params=params)
 
 
 @router.post("/search", response_model=Page[TaskSchema])
 async def get_tasks_filtered_by_status_and_priority(
     get_tasks_filtered_by_status_and_priority_schema: GetTasksFilteredByStatusAndPrioritySchema,
     db: Session = Depends(get_db),
+    params: Params = Depends(),
 ):
-    return paginate(
-        task_service.get_tasks_filtered_by_status_and_priority_schema(
-            filtering_statuses=get_tasks_filtered_by_status_and_priority_schema.statuses,
-            filtering_priorities=get_tasks_filtered_by_status_and_priority_schema.priorities,
-            db=db,
-        )
+    result = task_service.get_tasks_filtered_by_status_and_priority_by_pagination(
+        filtering_statuses=get_tasks_filtered_by_status_and_priority_schema.statuses,
+        filtering_priorities=get_tasks_filtered_by_status_and_priority_schema.priorities,
+        db=db,
+        params=params,
     )
+    return Page.create(items=result[0], total=result[1], params=params)
 
 
 @router.get("/incomplete", response_model=List[TaskSchema])

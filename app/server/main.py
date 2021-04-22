@@ -20,7 +20,6 @@ app = FastAPI()
 app.include_router(router)
 
 origins = ["http://localhost:9000"]
-add_pagination(app)
 
 
 # cf. https://github.com/tiangolo/fastapi/issues/775#issuecomment-592946834
