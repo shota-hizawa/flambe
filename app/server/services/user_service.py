@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from utils.crypt import encrypt
 from typing import List, cast
 from entities import User, Task
-from entities.task import Status, Priority
+from entities.task import Priority, get_incomplete_status
 from exceptions import *
 
 
@@ -14,7 +14,7 @@ def get_all(db: Session) -> List[User]:
 
 def get_incomplete_tasks(db: Session, user_id: int) -> List[Task]:
     return task_repository.find_by_user_id_and_status_order_by_status_and_priority(
-        user_id=user_id, filtering_statuses=[Status.TODO, Status.DOING], db=db
+        user_id=user_id, filtering_statuses=get_incomplete_status(), db=db
     )
 
 

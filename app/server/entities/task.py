@@ -4,12 +4,17 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum as DbEnum
 from enum import Enum
 from entities.task_assignment import TaskAssignment
+from typing import List
 
 
 class Status(str, Enum):
     TODO = "TODO"
     DOING = "DOING"
     DONE = "DONE"
+
+
+def get_incomplete_status() -> List[Status]:
+    return [Status.TODO, Status.DOING]
 
 
 class Priority(str, Enum):
