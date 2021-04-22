@@ -1,28 +1,33 @@
 from repositories import task_repository
 from services import user_service
 from sqlalchemy.orm import Session
-from typing import List, Optional, cast
+from typing import List, Optional, cast, Tuple
 from entities.task import Task, Status, Priority, get_incomplete_status
 from exceptions import *
+from fastapi_pagination import Params
 
 
-def get_all(db: Session) -> List[Task]:
-    return task_repository.find_all(db=db)
+def get_all_by_pagination(db: Session, params: Params) -> Tuple[List[Task], int]:
+    return task_repository.find_all_by_pagination(db=db, params=params)
 
 
-def get_tasks_filtered_by_status_and_priority_schema(
-    filtering_statuses: List[Status], filtering_priorities: List[Priority], db: Session
-) -> List[Task]:
+def get_tasks_filtered_by_status_and_priority_by_pagination(
+    filtering_statuses: List[Status],
+    filtering_priorities: List[Priority],
+    db: Session,
+    params: Params,
+) -> Tuple[List[Task], int]:
     # 指定されてない条件は全検索にする
     if len(filtering_statuses) == 0:
         filtering_statuses = list(map(Status, Status))
     if len(filtering_priorities) == 0:
         filtering_priorities = list(map(Priority, Priority))
 
-    return task_repository.find_by_statuses_and_priorities(
+    return task_repository.find_by_statuses_and_priorities_by_pagination(
         filtering_statuses=filtering_statuses,
         filtering_priorities=filtering_priorities,
         db=db,
+        params=params,
     )
 
 
