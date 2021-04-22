@@ -1,5 +1,5 @@
 from entities.base import BaseModel
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum as DbEnum
 from enum import Enum
@@ -20,7 +20,10 @@ class Priority(str, Enum):
 
 class Task(BaseModel):
     __tablename__ = "tasks"
-    __table_args__ = {"mysql_engine": "InnoDB"}
+    __table_args__ = (
+        (Index("idx_status_priority", "status", "priority")),
+        {"mysql_engine": "InnoDB"},
+    )
 
     title = Column(String(255), nullable=False, comment="タイトル")
     description = Column(String(255), comment="説明本文")
