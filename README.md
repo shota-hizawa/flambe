@@ -39,6 +39,8 @@ docker-compose up -d
 - `localhost:8000/redoc`
   API定義（Redoc）
 
+※API定義について、現段階ではローカル環境にてアプリケーションを起動した上でアクセスして表示する必要があるが、開発段階に応じてCI/CDを構築し最新の状態を静的ホスティングすることを想定。
+
 ## Commit Message Format
 ```
 <prefix>: <変更内容>
