@@ -35,7 +35,7 @@ def find_by_statuses_order_by_status_asc_and_priority_desc(
     return (
         db.query(Task)
         .filter(Task.status.in_(filtering_statuses))
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
@@ -53,7 +53,7 @@ def find_by_user_id_and_status_order_by_status_asc_and_priority_desc(
         db.query(Task)
         .outerjoin(TaskAssignment)
         .filter(Task.status.in_(filtering_statuses), TaskAssignment.user_id == user_id)
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
@@ -84,7 +84,7 @@ def find_by_statuses_and_without_assignees_order_by_status_asc_and_priority_desc
         .filter(
             Task.status.in_(filtering_statuses), Task.id.in_(task_ids_without_assignees)
         )
-        .order_by(status_sort(), desc(priority_sort()))
+        .order_by(Task.status, Task.priority)
         .all()
     )
 
@@ -134,13 +134,3 @@ def remove_assignment_from_user(updated_task: Task, assignee: User) -> Task:
 
 def delete(db: Session, deleted_task: Task) -> None:
     db.delete(deleted_task)
-
-
-def status_sort():
-    whens = {Status.TODO: 0, Status.DOING: 1, Status.DONE: 2}
-    return case(value=Task.status, whens=whens).label("status")
-
-
-def priority_sort():
-    whens = {Priority.LOW: 0, Priority.MEDIUM: 1, Priority.HIGH: 2}
-    return case(value=Task.priority, whens=whens).label("priority")
